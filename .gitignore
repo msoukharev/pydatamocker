@@ -1,0 +1,9 @@
+.DS_Store
+.vscode
+/*.egg-info
+**/__pycache__
+# Author's virtual environment path.
+#    It is strongly suggested to use a virtual environment both for development and testing.
+/env
+# Data in non-pickle format
+/data
