@@ -3,12 +3,12 @@ import numpy.random as npr
 
 _dtype_distribution = {
     'float': {
-        'normal': lambda **props: lambda size: npr.random.normal(*[props.get(prop) for prop in ['mean', 'std']] + [size]),
-        'uniform': lambda **props: lambda size: npr.random.uniform(*[props.get(prop) for prop in ['min', 'max']] + [size])
+        'normal': lambda props: lambda size: npr.normal(*[props.get(prop) for prop in ['mean', 'std']] + [size]),
+        'uniform': lambda props: lambda size: npr.uniform(*[props.get(prop) for prop in ['min', 'max']] + [size])
     },
     'integer': {
-        'uniform': lambda **props: lambda size: npr.random.random_integers(*[props.get(prop) for prop in ['min', 'max']] + [size]),
-        'binomial': lambda **props: lambda size: npr.random.binomial(*[props.get(prop) for prop in ['n', 'p']] + [size])
+        'uniform': lambda props: lambda size: npr.random_integers(*[props.get(prop) for prop in ['min', 'max']] + [size]),
+        'binomial': lambda props: lambda size: npr.binomial(*[props.get(prop) for prop in ['n', 'p']] + [size])
     }
 }
 
