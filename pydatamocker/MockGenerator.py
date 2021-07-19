@@ -8,18 +8,21 @@ from .util.arguments import dedup_list, list_diff
 class MockGenerator:
 
     dataframe: DataFrame
-    field = dict()
+    fields_describe = dict()
 
-    def add_field(self, field: Field):
-        self.fields[field.name] = field
+    def add_field(self, name: str, mock_type:str, **props):
+        self.fields_describe[name] = {
+            'mock_type': mock_type,
+            'props': props
+        }
 
-    def add_fields(self, *field_objects):
-        for field_obj in field_objects:
-            self.add_field(field_obj)
+    def add_fields(self, fields_describe: dict):
+        self.fields_describe.update(fields_describe)
 
     def sample(self, size: int):
-        column_order = ( self._column_order + list_diff(self.fields.keys(), self._column_order) ) or self.fields.keys()
-        field_iterator = ( (name, self.fields[name]) for name in column_order )
+        column_order = ( self._column_order + list_diff(self.fields_describe.keys(), self._column_order) ) or self.fields_describe.keys()
+        field_iterator = ( (name,
+            Field(name, self.fields_describe[name]['mock_type'], **self.fields_describe[name]['props'])) for name in column_order )
         self.dataframe = DataFrame( data={ name: field.sample(size)
                                             for (name, field) in field_iterator },
                                     index=arange(size) )
@@ -32,7 +35,7 @@ class MockGenerator:
             raise ValueError('Path must be specified')
         write_dataframe(path, self.dataframe)
 
-    def set_order(self, order):
+    def set_column_order(self, order):
         self._column_order = dedup_list(order)
 
     def __str__(self) -> str:
