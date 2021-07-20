@@ -1,5 +1,5 @@
 from pandas import Series, DataFrame, concat
-from .sampling.generators import get_sample_generator
+from .sampler import get_sample_generator
 
 
 def build_series(name: str, field_descriptor: dict, size: int):

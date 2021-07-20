@@ -1,7 +1,7 @@
 from pandas import DataFrame
-from .io.writer import write_dataframe
+from .io import write_dataframe
 from .builder import build_dataframe
-from .util.arguments import dedup_list, list_diff
+from .util.list import dedup_list, list_diff
 
 
 def _config_column_order(specified, fields_dict):
