@@ -16,8 +16,7 @@ class MockGenerator:
 
     dataframe: DataFrame
     fields_describe = {
-        'fields': dict(),
-        'dependencies': []
+        'fields': dict()
     }
 
     def add_field(self, name: str, mock_type:str, **props):
@@ -28,13 +27,6 @@ class MockGenerator:
 
     def add_fields(self, fields_dict: dict):
         self.fields_describe['fields'].update(fields_dict)
-
-    def add_dependency(self, from_: str, to: str, **props):
-        self.fields_describe['dependencies'].push({
-            'from': from_,
-            'to': to,
-            'props': props
-        })
 
     def sample(self, size: int):
         self.dataframe = build_dataframe(self.fields_describe, size)
