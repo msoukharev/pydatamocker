@@ -26,10 +26,10 @@ _cache = _Datacache()
 
 
 _df_writers = {
-    'pkl' : lambda file, dataframe: dataframe.to_pickle(file, index=True),
-    'csv' : lambda file, dataframe: dataframe.to_csv(file, index=False),
-    'tsv' : lambda file, dataframe: dataframe.to_csv(file, sep='\t', index=False),
-    'json' : lambda file, dataframe: dataframe.to_json(file, index=False)
+    '.pkl' : lambda file, dataframe: dataframe.to_pickle(file, index=True),
+    '.csv' : lambda file, dataframe: dataframe.to_csv(file, index=False),
+    '.tsv' : lambda file, dataframe: dataframe.to_csv(file, sep="\t", index=False),
+    '.json' : lambda file, dataframe: dataframe.to_json(file, orient='table', index=False)
 }
 
 
@@ -48,5 +48,5 @@ def load_dataset(dataset: str):
 def write_dataframe(file: str, dataframe: DataFrame):
     file_ext = Path(file).suffix
     if file_ext is None or not file_ext in _df_writers.keys():
-        file_ext = 'csv'
+        file_ext = '.csv'
     _df_writers[file_ext](file, dataframe)
