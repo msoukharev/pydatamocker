@@ -7,3 +7,5 @@
 /env
 # Data in non-pickle format
 /data
+# Notebooks
+/notebooks/data
