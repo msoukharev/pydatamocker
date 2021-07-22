@@ -1,5 +1,5 @@
 from pandas import DataFrame
-from .io import write_dataframe
+from .io import write_dataframe, load_json, write_json
 from .builder import build_dataframe
 from .util.list import dedup_list, list_diff
 
@@ -18,6 +18,13 @@ class MockGenerator:
     fields_describe = {
         'fields': dict()
     }
+
+    def __init__(self, config = None) -> None:
+        if config:
+            self.fields_describe = load_json(config)
+
+    def dump_config(self, path, pretty=True, indent=2):
+        write_json(self.fields_describe, path, pretty, indent)
 
     def add_field(self, name: str, mock_type:str, **props):
         self.fields_describe['fields'][name] = {

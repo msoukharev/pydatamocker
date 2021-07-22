@@ -1,6 +1,7 @@
 import os.path as osp
 from pandas import read_pickle, DataFrame
 from pathlib import Path
+import json
 
 
 class _Datacache:
@@ -50,3 +51,13 @@ def write_dataframe(file: str, dataframe: DataFrame):
     if file_ext is None or not file_ext in _df_writers.keys():
         file_ext = '.csv'
     _df_writers[file_ext](file, dataframe)
+
+
+def load_json(file) -> dict:
+    f = open(file, 'rt') if type(file) is str else file
+    return json.load(f)
+
+
+def write_json(obj: dict, path: str, pretty: str, indent: int):
+    with open(path, 'wt', ) as f:
+        json.dump(obj, f, indent=(indent if pretty else None))
