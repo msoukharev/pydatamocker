@@ -1,26 +1,27 @@
 import os.path as osp
-from pandas import read_pickle, DataFrame
+from pandas import read_pickle, read_csv, DataFrame
 from pathlib import Path
 import json
 
 
 class _Datacache:
 
-    data = dict()
+    data = {}
 
     def __init__(self):
         return
 
-    def write(self, key: str, dataset, path: str = None):
-        self.data[key] = { 'dataset': dataset }
-        if path:
-            self.data[key]['path'] = path
-        return self.data[key]
+    def write(self, key: str, data, **kwargs):
+        self.data[key] = { 'data': data }
+        self.data[key].update(kwargs)
 
     def read(self, key: str):
         if not self.data.get(key):
             return None
-        return self.data[key]['dataset']
+        return self.data[key]['data']
+
+    def get_props(self, key: str, *props):
+        return { key: self.data[key][kw] for kw in props }
 
 
 _cache = _Datacache()
@@ -34,15 +35,26 @@ _df_writers = {
 }
 
 
+get_dataset_path = lambda dataset: osp.join(osp.dirname(__file__), osp.pardir, 'data', dataset + '.pkl')
+
+
 DATASETS = { 'first_name', 'last_name' }
 
 
 def load_dataset(dataset: str):
-    data = _cache.read(dataset)
+    path = get_dataset_path(dataset)
+    data = _cache.read(path)
     if data is None:
-        path = osp.join(osp.dirname(__file__), osp.pardir, 'data', dataset + '.pkl')
         data = read_pickle(path)
-        _cache.write(dataset, data, path)
+        _cache.write(path, data)
+    return data
+
+
+def load_table(path: str):
+    data = _cache.read(path)
+    if data is None:
+        data = read_csv(path)
+        _cache.write(path, data)
     return data
 
 
