@@ -1,5 +1,5 @@
 from pandas import DataFrame
-from .io import write_dataframe, load_json, write_json
+from .io import write_dataframe, load_json, write_json, load_table
 from .builder import build_dataframe
 from .util.list import dedup_list, list_diff
 
@@ -34,6 +34,11 @@ class MockGenerator:
 
     def add_fields(self, fields_dict: dict):
         self.fields_describe['fields'].update(fields_dict)
+
+    def add_table(self, path: str):
+        columns = load_table(path).columns
+        for col in columns:
+            self.fields_describe['fields'][col] = {'mock_type': 'table', 'props': { 'path': path }}
 
     def sample(self, size: int):
         self.dataframe = build_dataframe(self.fields_describe, size)
