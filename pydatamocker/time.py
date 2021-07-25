@@ -1,5 +1,6 @@
 import pandas as pd
 from numpy import arange
+from .util.functions import compose
 
 
 ISO_DATETIME = '%Y-%m-%dT%H:%M%:%SZ'
@@ -7,25 +8,28 @@ ISO_DATETIME = '%Y-%m-%dT%H:%M%:%SZ'
 ISO_DATE = '%Y-%m-%d'
 
 
-def _type_formatter(type_: str):
-    if type_ == 'date':
-        return ISO_DATE
-    if type_ == 'datetime':
-        return ISO_DATETIME
-
-
-_datetime_distr = {
-    'range': lambda type_, props: lambda size: pd.date_range(start=props['start'], end=props['end'], periods=size)
-        .strftime(_type_formatter(type_))
-        .to_series(index=arange(size)),
+default_format = {
+    'date': ISO_DATE,
+    'datetime': ISO_DATETIME
 }
 
 
-_datetime_distr['uniform'] = (
-    lambda type_, props: lambda size: (_datetime_distr['range'])(type_, props)(size).sample(frac=1).reset_index(drop=True)
+_distribution_samples = {
+    'range': compose(False,
+        lambda **kw: pd.date_range(start=kw['start'], end=kw['end'], periods=kw['size']),
+        lambda f: lambda **kw: f(**kw).strftime(default_format[kw['type']]),
+        lambda f: lambda **kw: f(**kw).to_series(index=arange(kw['size']))
+    ),
+}
+_distribution_samples['uniform'] = (
+    compose(False,
+        lambda **kw: pd.date_range(_distribution_samples['range'])(**kw),
+        lambda f: lambda **kw: f(**kw).sample(frac=1).reset_index(drop=True)
+    )
 )
 
 
-def get_chrono_sampler(mock_type: str, distr: str, **props):
-    sampler = _datetime_distr[distr]
-    return sampler(mock_type, props)
+def get_sample(mock_type: str, size: int, **kw):
+    kw['type'] = mock_type
+    distr = kw['distr']
+    return _distribution_samples[distr](**( kw | {'size' : size} ) )

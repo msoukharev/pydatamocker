@@ -1,8 +1,8 @@
 from pandas.core.frame import DataFrame
 from .io import load_dataset, load_table, DATASETS
 from pandas import Series
-from .numbers import get_sample, TYPES as NUMTYPES
-from .time import get_chrono_sampler
+from .numbers import get_sample as num_sample, TYPES as NUMTYPES
+from .time import get_sample as time_sample
 
 
 def _dataset_sample_generators(mock_type):
@@ -13,11 +13,6 @@ def _enum_sample_generators(**props):
     values = props.pop('values')
     weights = props.pop('weights') if 'weights' in props else None
     return lambda size: (Series(values).sample(n=size, ignore_index=True, replace=True, weights=weights) for _ in [0])
-
-
-def _chrono_sample_generators(mock_type: str, **props):
-    distr = props.pop('distr')
-    return lambda size: (get_chrono_sampler(mock_type, distr, **props)(size) for _ in [0])
 
 
 def _multicolumn_sampler(dataset, size, columns):
@@ -35,11 +30,11 @@ def get_sample_generators(mock_type: str, **props):
     if mock_type in DATASETS:
         return _dataset_sample_generators(mock_type)
     elif mock_type in NUMTYPES:
-        return lambda size: (get_sample(mock_type, size, **props) for _ in [0])
+        return lambda size: (num_sample(mock_type, size, **props) for _ in [0])
     elif mock_type == 'enum':
         return _enum_sample_generators(**props)
     elif mock_type in { 'date', 'datetime' }:
-        return _chrono_sample_generators(mock_type, **props)
+        return lambda size: (time_sample(mock_type, size, **props) for _ in [0])
     elif mock_type == 'table' and props.get('path'):
         path = props.pop('path')
         return _table_data_generators(path)
