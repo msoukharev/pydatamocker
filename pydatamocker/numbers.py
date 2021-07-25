@@ -44,4 +44,4 @@ DISTRIBUTIONS = {
 def get_sample(dtype: str, size: int = None, **props):
     size = size or props['size']
     distr = props['distr']
-    return _distribution_samples[dtype][distr]( **(props | {'size': size}) )
+    return _distribution_samples[dtype][distr]( **{**props, 'size': size} )

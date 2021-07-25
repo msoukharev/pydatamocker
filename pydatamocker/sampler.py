@@ -6,7 +6,7 @@ from .time import get_sample as time_sample
 
 def _table_column_sample(path: str, field_name: str):
     dataset = load_table(path)
-    return lambda size: [dataset[field_name].sample(n=size, replace=True).reset_index(drop=True)]
+    return lambda size: dataset[field_name].sample(n=size, replace=True).reset_index(drop=True)
 
 
 def get_sample_generators(field_name: str, mock_type: str, **props):
