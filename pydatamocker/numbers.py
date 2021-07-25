@@ -1,25 +1,31 @@
 import numpy as np
 from .util.math import range_step
+from .util.functions import compose
 
-_dtype_distribution = {
+_distribution_samples = {
     'float': {
-        'normal': lambda props: lambda size: \
-            np.random.normal(*[props.get(prop) for prop in ['mean', 'std']] + [size]),
-        'uniform': lambda props: lambda size: \
-            np.random.uniform(*[props.get(prop) for prop in ['min', 'max']] + [size]),
-        'range': lambda props: lambda size: \
-            np.arange(props['start'], props['end'], range_step(props['start'], props['end'], size)).astype(float)[:size]
-
+        'normal': compose(False,
+                lambda **kw: np.random.normal(kw['mean'], kw['std'], kw['size'])
+        ),
+        'uniform': compose(False,
+            lambda **kw: np.random.uniform(kw['min'], kw['max'], kw['size'])
+        ),
+        'range': compose(False,
+            lambda **kw: np.arange(kw['start'], kw['end'], range_step(kw['start'], kw['end'], kw['size'])),
+            lambda f: lambda **kw: f(**kw).astype(float)[:kw['size']]
+        )
     },
     'integer': {
-        'uniform': lambda props: lambda size: \
-            np.random.random_integers(*[props.get(prop) for prop in ['min', 'max']] + [size]),
-        'binomial': lambda props: lambda size: \
-            np.random.binomial(*[props.get(prop) for prop in ['n', 'p']] + [size]),
-        'range': lambda props: lambda size: \
-            np.floor(
-                    np.arange(props['start'], props['end'], range_step(props['start'], props['end'], size)),
-                ).astype(int)[:size]
+        'uniform': compose(False,
+            lambda **kw: np.random.random_integers(kw['min'], kw['max'], kw['size'])
+        ),
+        'binomial': compose(False,
+            lambda **kw: np.random.binomial(kw['n'], kw['p'], kw['size'])
+        ),
+        'range': compose(False,
+            lambda **kw: np.arange(kw['start'], kw['end'], range_step(kw['start'], kw['end'], kw['size'])),
+            lambda f: lambda **kw: f(**kw).astype(int)[:kw['size']]
+        )
     }
 }
 
@@ -35,5 +41,7 @@ DISTRIBUTIONS = {
 }
 
 
-def get_distribution_sampler(dtype: str, distr: str, **props):
-    return _dtype_distribution[dtype][distr](props)
+def get_sample(dtype: str, size: int = None, **props):
+    size = size or props['size']
+    distr = props['distr']
+    return _distribution_samples[dtype][distr]( **(props | {'size': size}) )

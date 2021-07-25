@@ -1,17 +1,12 @@
 from pandas.core.frame import DataFrame
 from .io import load_dataset, load_table, DATASETS
 from pandas import Series
-from .numbers import get_distribution_sampler, TYPES as NUMTYPES
+from .numbers import get_sample, TYPES as NUMTYPES
 from .time import get_chrono_sampler
 
 
 def _dataset_sample_generators(mock_type):
     return lambda size: (load_dataset(mock_type).sample(n=size, ignore_index=True, replace=True) for _ in [0])
-
-
-def _numberic_sample_generators(mock_type: str, **props):
-    distr = props.pop('distr')
-    return lambda size: (get_distribution_sampler(mock_type, distr, **props)(size) for _ in [0])
 
 
 def _enum_sample_generators(**props):
@@ -40,7 +35,7 @@ def get_sample_generators(mock_type: str, **props):
     if mock_type in DATASETS:
         return _dataset_sample_generators(mock_type)
     elif mock_type in NUMTYPES:
-        return _numberic_sample_generators(mock_type, **props)
+        return lambda size: (get_sample(mock_type, size, **props) for _ in [0])
     elif mock_type == 'enum':
         return _enum_sample_generators(**props)
     elif mock_type in { 'date', 'datetime' }:
