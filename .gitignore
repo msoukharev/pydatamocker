@@ -5,7 +5,7 @@
 # Author's virtual environment path.
 #    It is strongly suggested to use a virtual environment both for development and testing.
 /env
-# Data in non-pickle format
-/data
 # Notebooks
-/notebooks/data
+/notebooks
+
+/dist

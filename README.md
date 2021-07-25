@@ -1,3 +1,3 @@
 # Pydatamocker
 
-Create lots of records of of poweful mock data
+Create lots of records for rich mock data
