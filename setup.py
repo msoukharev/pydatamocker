@@ -5,7 +5,7 @@ with open("README.md", "rt", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="pydatamocker",
-    version="0.2.0",
+    version="0.2.1",
     author="Maxim Soukharev",
     author_email="maxim.soukharev@gmail.com",
     description="A data mocker for python scripts and jupyter notebooks",
