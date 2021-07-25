@@ -35,7 +35,7 @@ _df_writers = {
 }
 
 
-get_dataset_path = lambda dataset: osp.join(osp.dirname(__file__), osp.pardir, 'data', dataset + '.pkl')
+get_dataset_path = lambda dataset: osp.join(osp.dirname(__file__), 'data', dataset + '.pkl')
 
 
 DATASETS = { 'first_name', 'last_name' }
