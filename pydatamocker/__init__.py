@@ -1,2 +1,2 @@
-from .MockGenerator import MockGenerator
-from .config import config
+from .mock_table import MockTable
+from .mocker import config

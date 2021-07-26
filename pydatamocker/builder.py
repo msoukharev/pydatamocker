@@ -1,10 +1,6 @@
 from pandas import Series, DataFrame, concat
 from .sampler import get_sample_generators
-from .config import get_configs
-
-# def build_series(name: str, field_descriptor: dict, size: int):
-    # get_sample = get_sample_generators(field_descriptor['mock_type'], **field_descriptor['props'])
-    # return Series(data=get_sample(size), name=name)
+from .mocker import get_configs
 
 
 def build_dataframe(fields_describe: dict, size: int) -> DataFrame:
@@ -18,5 +14,9 @@ def build_dataframe(fields_describe: dict, size: int) -> DataFrame:
         else:
             name = sample.name or field
         df = concat([df, Series(sample, name=name)], axis=1)
+    for lookup in fields_describe['lookups']:
+        ldf = lookup['table'].get_dataframe()
+        lookup_fields = lookup['fields']
+        df = concat([ df, ldf[lookup_fields].sample(n=size, ignore_index=True, replace=True) ], axis=1)
     report_progress and print('Done!')
     return df

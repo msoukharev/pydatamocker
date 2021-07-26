@@ -12,16 +12,15 @@ def _config_column_order(specified, fields_dict):
     return { key: fields_dict[key] for key in order }
 
 
-class MockGenerator:
+class MockTable:
 
-    dataframe: DataFrame
-    fields_describe = {
-        'fields': dict()
-    }
-
-    def __init__(self, config = None) -> None:
+    def __init__(self, name: str, config = None) -> None:
+        self.name = name
+        self.dataframe = None
         if config:
             self.fields_describe = load_json(config)
+        else:
+            self.fields_describe = { 'fields': dict(), 'lookups': [] }
 
     def dump_config(self, path, pretty=True, indent=2):
         write_json(self.fields_describe, path, pretty, indent)
@@ -39,6 +38,11 @@ class MockGenerator:
         columns = load_table(path).columns
         for col in columns:
             self.fields_describe['fields'][col] = {'mock_type': 'table', 'props': { 'path': path }}
+
+    def add_lookup(self, mock_table, fields):
+            self.fields_describe['lookups'].append(
+                { 'table': mock_table, 'fields': fields }
+            )
 
     def sample(self, size: int):
         self.dataframe = build_dataframe(self.fields_describe, size)
