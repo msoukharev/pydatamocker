@@ -1,30 +1,36 @@
 import numpy as np
 from .util.math import range_step
-from .util.functions import compose
+from .util.functions import composer
 
 _distribution_samples = {
     'float': {
-        'normal': compose(False,
-                lambda **kw: np.random.normal(kw['mean'], kw['std'], kw['size'])
+        'normal': lambda **kw: composer(
+            lambda **kw: np.random.normal(kw['mean'], kw['std'], kw['size']),
+            **kw
         ),
-        'uniform': compose(False,
-            lambda **kw: np.random.uniform(kw['min'], kw['max'], kw['size'])
+        'uniform': lambda **kw: composer(
+            lambda **kw: np.random.uniform(kw['min'], kw['max'], kw['size']),
+            **kw
         ),
-        'range': compose(False,
+        'range': lambda **kw: composer(
             lambda **kw: np.arange(kw['start'], kw['end'], range_step(kw['start'], kw['end'], kw['size'])),
-            lambda f: lambda **kw: f(**kw).astype(float)[:kw['size']]
+            lambda f, **kw: f.astype(float)[:kw['size']],
+            **kw
         )
     },
     'integer': {
-        'uniform': compose(False,
-            lambda **kw: np.random.random_integers(kw['min'], kw['max'], kw['size'])
+        'uniform': lambda **kw: composer(
+            lambda **kw: np.random.random_integers(kw['min'], kw['max'], kw['size']),
+            **kw
         ),
-        'binomial': compose(False,
-            lambda **kw: np.random.binomial(kw['n'], kw['p'], kw['size'])
+        'binomial': lambda **kw: composer(
+            lambda **kw: np.random.binomial(kw['n'], kw['p'], kw['size']),
+            **kw
         ),
-        'range': compose(False,
+        'range': lambda **kw: composer(
             lambda **kw: np.arange(kw['start'], kw['end'], range_step(kw['start'], kw['end'], kw['size'])),
-            lambda f: lambda **kw: f(**kw).astype(int)[:kw['size']]
+            lambda f, **kw: f.astype(int)[:kw['size']],
+            **kw
         )
     }
 }
