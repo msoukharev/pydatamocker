@@ -1,5 +1,4 @@
-from pandas import DataFrame
-from .io import write_dataframe, load_json, write_json, load_table
+from .io import get_table_columns, write_dataframe, load_json, write_json
 from .builder import build_dataframe
 from .util.collections import dedup_list, list_diff
 
@@ -20,7 +19,7 @@ class MockTable:
         if config:
             self.fields_describe = load_json(config)
         else:
-            self.fields_describe = { 'fields': dict(), 'lookups': [] }
+            self.fields_describe = { 'fields': dict() }
 
     def dump_config(self, path, pretty=True, indent=2):
         write_json(self.fields_describe, path, pretty, indent)
@@ -35,14 +34,18 @@ class MockTable:
         self.fields_describe['fields'].update(fields_dict)
 
     def add_table(self, path: str):
-        columns = load_table(path).columns
+        columns = get_table_columns(path)
         for col in columns:
             self.fields_describe['fields'][col] = {'mock_type': 'table', 'props': { 'path': path }}
 
     def add_lookup(self, mock_table, fields):
-            self.fields_describe['lookups'].append(
-                { 'table': mock_table, 'fields': fields }
-            )
+        for field in fields:
+            self.fields_describe['fields'][field] = {
+                'mock_type': 'mock_reference',
+                'props': {
+                    'mock_table': mock_table
+                }
+            }
 
     def sample(self, size: int):
         self.dataframe = build_dataframe(self.fields_describe, size)

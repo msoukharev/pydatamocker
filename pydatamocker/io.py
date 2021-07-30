@@ -23,6 +23,14 @@ class _Datacache:
     def get_props(self, key: str, *props):
         return { key: self.data[key][kw] for kw in props }
 
+    def sample(self, key: str, size: int, field_s = None):
+        sample_key = f"sample-{size}"
+        sample = self.data[key].get(sample_key)
+        if sample is None:
+            sample = self.data[key]['data'].sample(size, replace=True).reset_index(drop=True)
+            self.data[key][sample_key] = sample
+        return sample if field_s is None else sample[field_s]
+
 
 _cache = _Datacache()
 
@@ -41,21 +49,35 @@ get_dataset_path = lambda dataset: osp.join(osp.dirname(__file__), 'data', datas
 DATASETS = { 'first_name', 'last_name' }
 
 
-def load_dataset(dataset: str):
+def _load_dataset(dataset: str):
     path = get_dataset_path(dataset)
     data = _cache.read(path)
     if data is None:
         data = read_pickle(path)
         _cache.write(path, data)
-    return data
 
 
-def load_table(path: str):
+def _load_table(path: str):
     data = _cache.read(path)
     if data is None:
         data = read_csv(path)
         _cache.write(path, data)
-    return data
+
+
+def get_dataset_sample(name: str, size: int):
+    _load_dataset(name)
+    path = get_dataset_path(name)
+    return _cache.sample(path, size)
+
+
+def get_table_columns(path: str):
+    _load_table(path)
+    return _cache.read(path).columns
+
+
+def get_table_sample(path: str, field_s: str, size: int):
+    _load_table(path)
+    return _cache.sample(path, size, field_s)
 
 
 def write_dataframe(file: str, dataframe: DataFrame):

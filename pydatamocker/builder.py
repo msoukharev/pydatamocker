@@ -1,17 +1,29 @@
 from pandas import Series, DataFrame, concat
-from .mocker import get_configs
-from .io import load_dataset, load_table, DATASETS
+from .mocker import get_config
+from .io import get_dataset_sample, get_table_sample, DATASETS
 from .numbers import get_sample as num_sample, TYPES as NUMTYPES
 from .time import get_sample as time_sample
 
-def _table_column_sample(path: str, field_name: str, size: int):
-    dataset = load_table(path)
-    return dataset[field_name].sample(n=size, replace=True).reset_index(drop=True)
+
+class _SampleCache:
+
+    def __init__(self) -> None:
+        self.data = {}
+
+    def sample_field(self, mock_table, size: int):
+        sample = self.data.get(mock_table.name)
+        if sample is None or len(sample) != size:
+            sample = mock_table.get_dataframe().sample(n=size, replace=True).reset_index(drop=True)
+            self.data[mock_table.name] = sample
+        return sample
+
+
+_sample_cache = _SampleCache()
 
 
 def get_sample(field_name: str, mock_type: str, size: int, **props):
     if mock_type in DATASETS:
-        return load_dataset(mock_type).sample(n=size, ignore_index=True, replace=True)
+        return get_dataset_sample(mock_type, size)
     elif mock_type in NUMTYPES:
         return num_sample(mock_type, size, **props)
     elif mock_type == 'enum':
@@ -19,15 +31,16 @@ def get_sample(field_name: str, mock_type: str, size: int, **props):
     elif mock_type in { 'date', 'datetime' }:
         return time_sample(mock_type, size, **props)
     elif mock_type == 'table':
-        return _table_column_sample(props['path'], field_name, size)
+        return get_table_sample(props['path'], field_name, size)
+    elif mock_type == 'mock_reference':
+        return _sample_cache.sample_field(props['mock_table'], size)[field_name]
     else:
         raise ValueError('Unsupported type')
 
 
-
 def build_dataframe(fields_describe: dict, size: int) -> DataFrame:
     df = None
-    report_progress = get_configs('report_progress')
+    report_progress = get_config('report_progress')
     for field, field_spec in fields_describe['fields'].items():
         report_progress and print('Sampling', field, '...')
         sample = get_sample(field, field_spec['mock_type'], size, **field_spec['props'])
@@ -36,9 +49,5 @@ def build_dataframe(fields_describe: dict, size: int) -> DataFrame:
         else:
             name = sample.name or field
         df = concat([df, Series(sample, name=name)], axis=1)
-    for lookup in fields_describe['lookups']:
-        ldf = lookup['table'].get_dataframe()
-        lookup_fields = lookup['fields']
-        df = concat([ df, ldf[lookup_fields].sample(n=size, ignore_index=True, replace=True) ], axis=1)
     report_progress and print('Done!')
     return df

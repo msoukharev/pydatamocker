@@ -5,7 +5,5 @@ def config(**kwargs):
     mocker_config.update(kwargs)
 
 
-def get_configs(*keys):
-    if len(list(keys)) == 0:
-        keys = mocker_config.keys()
-    return (config.get(key) for key in keys)
+def get_config(key):
+    return mocker_config.get(key)
