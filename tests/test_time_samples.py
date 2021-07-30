@@ -1,0 +1,30 @@
+import pytest
+from pydatamocker.time import get_sample
+
+
+PROPS = {
+    'date': {
+        'start': '2019-02-20',
+        'end': '2019-03-30'
+    },
+    'datetime': {
+        'start': '2019-02-28T11:30:00Z',
+        'end': '2019-03-02T21:30:00Z'
+    }
+}
+
+
+MOCK_TYPE_TREE = {
+    'date': { 'uniform', 'range' },
+    'datetime': { 'uniform', 'range' }
+}
+
+
+SAMPLE_SIZE = 25723
+
+
+def test_no_nans():
+    for type_, distributions in MOCK_TYPE_TREE.items():
+        for distr in distributions:
+            sample = get_sample(type_, SAMPLE_SIZE, **{ **PROPS[type_], 'distr': distr })
+            assert sample.isna().sum() == 0, f"NaN values are present in the series. Type: {type_}, Distribution: {distr}"
