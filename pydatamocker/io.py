@@ -2,6 +2,7 @@ import os.path as osp
 from pandas import read_pickle, read_csv, DataFrame
 from pathlib import Path
 import json
+from .mocker import get_config
 
 
 class _Datacache:
@@ -81,10 +82,13 @@ def get_table_sample(path: str, field_s: str, size: int):
 
 
 def write_dataframe(file: str, dataframe: DataFrame):
+    report_progres = get_config('report_progress')
+    report_progres and print(f"Dumping into file...")
     file_ext = Path(file).suffix
     if file_ext is None or not file_ext in _df_writers.keys():
         file_ext = '.csv'
     _df_writers[file_ext](file, dataframe)
+    report_progres and print("Done!")
 
 
 def load_json(file) -> dict:
