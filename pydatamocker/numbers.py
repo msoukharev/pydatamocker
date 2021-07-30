@@ -1,6 +1,7 @@
 import numpy as np
 from .util.math import range_step
 from .util.functions import composer
+from pandas import Series
 
 _distribution_samples = {
     'float': {
@@ -50,4 +51,4 @@ DISTRIBUTIONS = {
 def get_sample(dtype: str, size: int = None, **props):
     size = size or props['size']
     distr = props['distr']
-    return _distribution_samples[dtype][distr]( **{**props, 'size': size} )
+    return Series( _distribution_samples[dtype][distr](**{**props, 'size': size}) )

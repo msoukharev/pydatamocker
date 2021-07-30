@@ -20,7 +20,7 @@ _distribution_samples = {
 }
 _distribution_samples['uniform'] = (
     lambda **kw: composer(
-        lambda **kw: pd.date_range(_distribution_samples['range'](**kw)),
+        lambda **kw: _distribution_samples['range'](**kw),
         lambda f, **kw: f.sample(frac=1).reset_index(drop=True),
         **kw
     )
@@ -30,4 +30,4 @@ _distribution_samples['uniform'] = (
 def get_sample(mock_type: str, size: int, **kw):
     kw['type'] = mock_type
     distr = kw['distr']
-    return _distribution_samples[distr](**{ **kw, 'size' : size } )
+    return pd.Series( _distribution_samples[distr](**{ **kw, 'size' : size }) )

@@ -44,10 +44,7 @@ def build_dataframe(fields_describe: dict, size: int) -> DataFrame:
     for field, field_spec in fields_describe['fields'].items():
         report_progress and print('Sampling', field, '...')
         sample = get_sample(field, field_spec['mock_type'], size, **field_spec['props'])
-        if not type(sample) is Series:
-            name = field
-        else:
-            name = sample.name or field
-        df = concat([df, Series(sample, name=name)], axis=1)
+        sample.name = sample.name or field
+        df = concat([df, sample], axis=1)
     report_progress and print('Done!')
     return df
