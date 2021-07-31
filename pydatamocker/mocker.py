@@ -17,3 +17,11 @@ def config(**kwargs):
 
 def get_config(key):
     return mocker_config.get(key)
+
+
+def report_progress(func):
+    def f():
+        mocker_config['report_progress'] = True
+        func()
+        mocker_config['report_progress'] = False
+    return f
