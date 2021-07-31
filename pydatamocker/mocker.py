@@ -22,6 +22,7 @@ def get_config(key):
 def report_progress(func):
     def f():
         mocker_config['report_progress'] = True
-        func()
+        res = func()
         mocker_config['report_progress'] = False
+        return res
     return f
