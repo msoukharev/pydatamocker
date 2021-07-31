@@ -3,7 +3,7 @@ from .mocker import get_config
 from .io import get_dataset_sample, get_table_sample, DATASETS
 from .numbers import get_sample as num_sample, TYPES as NUMTYPES
 from .time import get_sample as time_sample
-
+from .choices import get_sample as choice_sample
 
 class _SampleCache:
 
@@ -27,7 +27,7 @@ def get_sample(field_name: str, mock_type: str, size: int, **props):
     elif mock_type in NUMTYPES:
         return num_sample(mock_type, size, **props)
     elif mock_type == 'enum':
-        return Series(props['values']).sample(n=size, replace=True, weights=props['weights']).reset_index(drop=True)
+        return choice_sample(size, **props)
     elif mock_type in { 'date', 'datetime' }:
         return time_sample(mock_type, size, **props)
     elif mock_type == 'table':
