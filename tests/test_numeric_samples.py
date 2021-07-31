@@ -1,5 +1,6 @@
 import pytest
 from pydatamocker.numbers import get_sample
+from .asserts import assert_equals
 
 
 PROPS = {
@@ -27,4 +28,4 @@ def test_no_nans():
     for type_, distributions in MOCK_TYPE_TREE.items():
         for distr in distributions:
             sample = get_sample(type_, SAMPLE_SIZE, **{ **PROPS, 'distr': distr})
-            assert sample.isna().sum() == 0, f"NaN values are present in the series. Type: {type_}, Distribution: {distr}"
+            assert_equals(0, sample.isna().sum(), f"NaN values are present in the series. Type: {type_}, Distribution: {distr}")
