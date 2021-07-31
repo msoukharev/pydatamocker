@@ -1,4 +1,14 @@
+mocker_config_defaults = {
+    'report_progress': False
+}
+
+
 mocker_config = {}
+
+
+def reset_config():
+    mocker_config.clear()
+    mocker_config.update(mocker_config_defaults.copy())
 
 
 def config(**kwargs):
