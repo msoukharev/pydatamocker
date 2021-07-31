@@ -6,6 +6,8 @@
 #    It is strongly suggested to use a virtual environment both for development and testing.
 /env
 # Notebooks
-/notebooks
-
+/.notebooks
+# Test cache
+/.pytest_cache
+# Dist files
 /dist
