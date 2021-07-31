@@ -21,7 +21,7 @@ _distribution_samples = {
     },
     'integer': {
         'uniform': lambda **kw: composer(
-            lambda **kw: np.random.random_integers(kw['min'], kw['max'], kw['size']),
+            lambda **kw: np.random.randint(kw['min'], kw['max'], kw['size']),
             **kw
         ),
         'binomial': lambda **kw: composer(
