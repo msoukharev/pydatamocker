@@ -12,6 +12,6 @@ case $1 in
     ;;
     *)
         echo 'Unknown command'
-        return 1
+        exit 1
     ;;
 esac
