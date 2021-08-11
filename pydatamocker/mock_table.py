@@ -61,8 +61,11 @@ class MockTable:
     def set_column_order(self, order):
         self.fields_describe['fields'] = _config_column_order(order, self.fields_describe['fields'])
 
+    def col(self, col_s):
+        return self.dataframe[col_s]
+
     def __str__(self):
         return self.dataframe.__str__()
 
     def __repr__(self):
-        return self.dataframe.__repr__()
+        return self.dataframe
