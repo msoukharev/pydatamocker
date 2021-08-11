@@ -68,4 +68,4 @@ class MockTable:
         return self.dataframe.__str__()
 
     def __repr__(self):
-        return self.dataframe
+        return self.dataframe.__repr__()
