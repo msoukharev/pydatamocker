@@ -1,5 +1,5 @@
 import pytest
-from pydatamocker.numbers import get_sample
+from pydatamocker.types.number import get_sample
 from .asserts import assert_equals
 
 

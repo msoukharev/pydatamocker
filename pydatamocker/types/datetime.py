@@ -1,7 +1,6 @@
 import pandas as pd
 from numpy import arange
-from .util.functions import composer
-import datetime
+from ..util.functions import composer
 
 
 default_formatter = {

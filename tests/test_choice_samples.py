@@ -1,5 +1,5 @@
 import pytest
-from pydatamocker.choices import *
+from pydatamocker.types.enum import *
 from .asserts import assert_equals, assert_subset
 
 

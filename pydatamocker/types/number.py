@@ -1,7 +1,8 @@
 import numpy as np
-from .util.math import range_step
-from .util.functions import composer
+from ..util.math import range_step
+from ..util.functions import composer
 from pandas import Series
+
 
 _distribution_samples = {
     'float': {

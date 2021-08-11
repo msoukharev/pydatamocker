@@ -1,5 +1,5 @@
 import pytest
-from pydatamocker.time import get_sample
+from pydatamocker.types.datetime import get_sample
 from .asserts import assert_equals
 
 

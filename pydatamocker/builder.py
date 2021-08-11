@@ -1,9 +1,9 @@
 from pandas import DataFrame, concat
 from .mocker import get_config
 from .io import get_dataset_sample, get_table_sample, DATASETS
-from .numbers import get_sample as num_sample, TYPES as NUMTYPES
-from .time import get_sample as time_sample
-from .choices import get_sample as choice_sample, get_dependent_sample as dep_choice_sample
+from .types.number import get_sample as num_sample, TYPES as NUMTYPES
+from .types.datetime import get_sample as time_sample
+from .types.enum import get_sample as choice_sample, get_dependent_sample as dep_choice_sample
 
 
 class _SampleCache:
