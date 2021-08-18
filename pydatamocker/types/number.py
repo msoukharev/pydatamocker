@@ -49,7 +49,40 @@ DISTRIBUTIONS = {
 }
 
 
-def get_sample(dtype: str, size: int = None, **props):
+def base_props(dtype: str, size: int, **props):
+    distr = props.get('distr') or 'uniform'
+    if distr not in {'uniform', 'range'}:
+        return props
+    bound_labels = {
+        'uniform': {
+            'low': 'min',
+            'high': 'max'
+        },
+        'range': {
+            'low': 'start',
+            'high': 'end'
+        }
+    }
+    low = props.get('min') if dtype == 'normal' else props.get('start')
+    high = props.get('max') if dtype == 'normal' else props.get('end')
+    if not low and high:
+        low = high - size
+    elif not high and low:
+        high = low + size
+    else:
+        low = low or 0
+        high = high or size
+    return {
+        **props, **{
+            'distr': distr,
+            bound_labels[distr]['low']: low,
+            bound_labels[distr]['high']: high
+        }
+    }
+
+
+def get_sample(dtype: str, size: int, **props):
     size = size or props['size']
+    props = base_props(dtype, size, **props)
     distr = props['distr']
     return Series( _distribution_samples[dtype][distr](**{**props, 'size': size}) )

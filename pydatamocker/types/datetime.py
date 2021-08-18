@@ -1,6 +1,8 @@
+from datetime import datetime
 import pandas as pd
 from numpy import arange
 from ..util.functions import composer
+import datetime
 
 
 default_formatter = {
@@ -26,7 +28,21 @@ _distribution_samples['uniform'] = (
 )
 
 
+def base_props(mock_type: str, **props):
+    now = datetime.datetime.today()
+    start = (now - datetime.timedelta(days=365)).strftime(default_formatter[mock_type])
+    end = (now + datetime.timedelta(days=365)).strftime(default_formatter[mock_type])
+    base_props = {
+        'distr': 'range',
+        'start': start,
+        'end': end
+    }
+    props = { **base_props, **props }
+    return props
+
+
 def get_sample(mock_type: str, size: int, **kw):
-    kw['type'] = mock_type
-    distr = kw['distr']
-    return pd.Series( _distribution_samples[distr](**{ **kw, 'size' : size }) )
+    props = base_props(mock_type, props=kw)
+    props['type'] = mock_type
+    distr = props['distr']
+    return pd.Series( _distribution_samples[distr](**{ **props, 'size' : size }) )

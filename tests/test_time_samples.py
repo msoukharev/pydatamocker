@@ -29,3 +29,10 @@ def test_no_nans():
         for distr in distributions:
             sample = get_sample(type_, SAMPLE_SIZE, **{ **PROPS[type_], 'distr': distr })
             assert_equals(0, sample.isna().sum(), f"NaN values are present in the series. Type: {type_}, Distribution: {distr}")
+
+
+def test_base_props():
+    for type_ in MOCK_TYPE_TREE.keys():
+        sample = get_sample(type_, SAMPLE_SIZE)
+        assert sample is not None, "Sample was not created"
+        assert_equals(0, sample.isna().sum(), f"Sample has NaN values. Type: {type_}")

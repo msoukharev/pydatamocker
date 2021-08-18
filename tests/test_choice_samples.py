@@ -41,3 +41,9 @@ def test_dependent_is_subset():
     for ctrl_val in vals:
         dep_sample_uniques = gr.get_group(ctrl_val)['ctrl'].unique()
         assert_subset(dep_sample_uniques, dep_vals, 'The sample unique value set is not a subset of the specified options')
+
+
+def test_base_props():
+    values = PROPS[0]['values']
+    sample = get_sample(SAMPLE_SIZE, values=values)
+    assert_subset(sample.unique(), set(values), "The sample values are not a subset of the specified options")

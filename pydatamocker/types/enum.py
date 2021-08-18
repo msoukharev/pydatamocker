@@ -2,7 +2,17 @@ from pandas import Series, DataFrame
 import numpy as np
 
 
+def base_props(**props):
+    values = props['values']
+    base_props = {
+        'weights': [1] * len(values)
+    }
+    props = { **base_props, **props }
+    return props
+
+
 def get_sample(size: int, **props):
+    props = base_props(**props)
     return Series(props['values']).sample(n=size, replace=True, weights=props['weights']).reset_index(drop=True)
 
 

@@ -29,14 +29,17 @@ class MockTable:
             'mock_type': mock_type,
             'props': props
         }
+        return self
 
     def add_fields(self, fields_dict: dict):
         self.fields_describe['fields'].update(fields_dict)
+        return self
 
     def add_table(self, path: str):
         columns = get_table_columns(path)
         for col in columns:
             self.fields_describe['fields'][col] = {'mock_type': 'table', 'props': { 'path': path }}
+        return self
 
     def add_lookup(self, mock_table, fields):
         for field in fields:
@@ -46,9 +49,11 @@ class MockTable:
                     'mock_table': mock_table
                 }
             }
+        return self
 
     def sample(self, size: int):
         self.dataframe = build_dataframe(self.fields_describe, size)
+        return self
 
     def get_dataframe(self):
         return self.dataframe.copy()
@@ -60,6 +65,7 @@ class MockTable:
 
     def set_column_order(self, order):
         self.fields_describe['fields'] = _config_column_order(order, self.fields_describe['fields'])
+        return self
 
     def col(self, col_s):
         return self.dataframe[col_s]
