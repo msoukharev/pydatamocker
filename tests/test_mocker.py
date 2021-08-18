@@ -29,4 +29,4 @@ def test_with_config_report_progress():
         sys.stdout = stdout
         tempfile.seek(0)
         numlines = sum(1 for _ in tempfile)
-        assert_equals(3, numlines, "Incorrect number of lines in the output")
+        assert_equals(5, numlines, "Incorrect number of lines in the output")

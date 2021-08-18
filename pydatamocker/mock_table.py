@@ -1,4 +1,4 @@
-from .io import get_table_columns, write_dataframe, load_json, write_json
+from .util.data import load_data, write_dataframe, load_json, write_json
 from .builder import build_dataframe
 from .util.collections import dedup_list, list_diff
 
@@ -8,7 +8,7 @@ def _config_column_order(specified, fields_dict):
         return fields_dict
     spec_dedup = dedup_list(specified)
     order = spec_dedup + list_diff(fields_dict.keys(), spec_dedup)
-    return { key: fields_dict[key] for key in order }
+    return {key: fields_dict[key] for key in order}
 
 
 class MockTable:
@@ -36,7 +36,8 @@ class MockTable:
         return self
 
     def add_table(self, path: str):
-        columns = get_table_columns(path)
+        data = load_data(path)
+        columns = data.columns
         for col in columns:
             self.fields_describe['fields'][col] = {'mock_type': 'table', 'props': { 'path': path }}
         return self

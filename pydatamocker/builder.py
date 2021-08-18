@@ -1,6 +1,6 @@
 from pandas import DataFrame, concat
 from .mocker import get_config
-from .io import get_dataset_sample, get_table_sample, DATASETS
+from .types.dataset import get_dataset_sample, get_table_sample, DATASET_KEYS
 from .types.number import get_sample as num_sample, TYPES as NUMTYPES
 from .types.datetime import get_sample as time_sample
 from .types.enum import get_sample as choice_sample, get_dependent_sample as dep_choice_sample
@@ -23,7 +23,7 @@ _sample_cache = _SampleCache()
 
 
 def get_sample(field_name: str, mock_type: str, size: int, accum_df: DataFrame = None, **props):
-    if mock_type in DATASETS:
+    if mock_type in DATASET_KEYS:
         return get_dataset_sample(mock_type, size)
     elif mock_type in NUMTYPES:
         return num_sample(mock_type, size, **props)
