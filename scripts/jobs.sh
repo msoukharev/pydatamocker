@@ -10,6 +10,11 @@ case $1 in
         python -m build
         twine upload --repository testpypi dist/*
     ;;
+    "build_deploy_prod")
+        rm -rf dist/*
+        python -m build
+        twine upload dist/*
+    ;;
     *)
         echo 'Unknown command'
         exit 1
