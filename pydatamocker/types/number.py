@@ -81,8 +81,11 @@ def base_props(dtype: str, size: int, **props):
     }
 
 
-def get_sample(dtype: str, size: int, **props):
+def get_sample(type_: str, size: int, **props):
     size = size or props['size']
-    props = base_props(dtype, size, **props)
+    props = base_props(type_, size, **props)
     distr = props['distr']
-    return Series( _distribution_samples[dtype][distr](**{**props, 'size': size}) )
+    nums = _distribution_samples[type_][distr](**{**props, 'size': size})
+    if distr == 'uniform' and props.get('round'):
+        np.around(nums, props['round'])
+    return Series(nums)
