@@ -17,13 +17,6 @@ Some datasets are included with the package. They can be sampled for fields. Dat
 
 ## Get started
 
-### Production
-
-Install the prod version by running
-```sh
-python3 -m pip install pydatamocker
-```
-
 ### Testing
 
 Install the latest testing version by running
