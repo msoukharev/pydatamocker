@@ -1,6 +1,6 @@
 import pytest
 from pydatamocker.generators.datetime import generate
-from .asserts import assert_equals
+from ..asserts import assert_equals
 
 PROPS = {
     'date': {

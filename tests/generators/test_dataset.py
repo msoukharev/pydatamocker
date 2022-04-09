@@ -1,6 +1,6 @@
 import pytest
 from pydatamocker.generators.dataset import generate, DATASETS
-from .asserts import assert_equals
+from ..asserts import assert_equals
 
 SAMPLE_SIZE = 1_000_000
 

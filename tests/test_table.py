@@ -1,6 +1,9 @@
 import pytest
-from pydatamocker.builder import build
-from pandas import DataFrame
+from pydatamocker.table import create, createByLoading, Table
+from tempfile import TemporaryFile
+# from .asserts import assert_equals
+
+SAMPLE_SIZE = 1_000
 
 FIELDS_SPEC = {
     'FirstName': {
@@ -38,12 +41,12 @@ FIELDS_SPEC = {
     }
 }
 
-SAMPLE_SIZE = 1_000_000
-
-def test_build():
-    res = build(SAMPLE_SIZE, FIELDS_SPEC)
-    assert isinstance(res, (DataFrame)), "DataFrame type was not returned"
-    assert len(FIELDS_SPEC) == len(res.columns), "Wrong number of columns"
+def test_table():
+    tab = create('Test')
+    for name, spec in FIELDS_SPEC.items():
+        tab.field(name, **spec)
+    res = tab.sample(SAMPLE_SIZE)
+    assert SAMPLE_SIZE == len(res), "Wrong number of records"
+    assert len(FIELDS_SPEC) == len(res.columns)
     for name in FIELDS_SPEC.keys():
-        assert name in set(res.columns), "Column missing " + name
-    assert SAMPLE_SIZE == len(res)
+        assert name in set(res.columns), "Column missing: " + name

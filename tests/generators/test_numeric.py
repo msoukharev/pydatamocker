@@ -1,7 +1,6 @@
 import pytest
 from pydatamocker.generators.numeric import generate
-from .asserts import assert_equals
-
+from ..asserts import assert_equals
 
 PROPS = {
     'mean': 10,
@@ -14,7 +13,6 @@ PROPS = {
     'end': 5000,
     'round': 4
 }
-
 
 MOCK_TYPE_TREE = {
     'float': {'uniform', 'normal', 'range'},
@@ -30,15 +28,12 @@ PROPS_MIN_CONFIGS = {
     ]
 }
 
-
 SAMPLE_SIZE = 320030
-
 
 def _assert_no_na(sample, type_, distr):
     assert_equals(0, sample.isna().sum(),
         f"NaN values are present in the series. Type: {type_}, Distribution: {distr}"
     )
-
 
 def test_no_nans():
     for type_, distributions in MOCK_TYPE_TREE.items():
