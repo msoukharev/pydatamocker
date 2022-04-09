@@ -1,15 +1,13 @@
 from .util.data import load_data, write_dataframe, load_json, write_json
 from .builder import build_dataframe
-from .util.collections import dedup_list, list_diff
-
+from .util.collections import dedup_list, list_difference
 
 def _config_column_order(specified, fields_dict):
     if not specified or len(specified) < 1:
         return fields_dict
     spec_dedup = dedup_list(specified)
-    order = spec_dedup + list_diff(fields_dict.keys(), spec_dedup)
+    order = spec_dedup + list_difference(fields_dict.keys(), spec_dedup)
     return {key: fields_dict[key] for key in order}
-
 
 class MockTable:
 

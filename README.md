@@ -20,6 +20,7 @@ Some datasets are included with the package. They can be sampled for fields. Dat
 ### Testing
 
 Install the latest testing version by running
+
 ```sh
 python3 -m pip install --index-url https://test.pypi.org/simple/ pydatamocker
 ```

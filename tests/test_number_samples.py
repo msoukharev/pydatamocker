@@ -1,6 +1,5 @@
-from pydatamocker.types.datetime import base_props
 import pytest
-from pydatamocker.types.number import get_sample
+from pydatamocker.generators.numeric import generate
 from .asserts import assert_equals
 
 
@@ -36,19 +35,13 @@ SAMPLE_SIZE = 320030
 
 
 def _assert_no_na(sample, type_, distr):
-    assert_equals(0, sample.isna().sum(), f"NaN values are present in the series. Type: {type_}, Distribution: {distr}")
+    assert_equals(0, sample.isna().sum(),
+        f"NaN values are present in the series. Type: {type_}, Distribution: {distr}"
+    )
 
 
 def test_no_nans():
     for type_, distributions in MOCK_TYPE_TREE.items():
         for distr in distributions:
-            sample = get_sample(type_, SAMPLE_SIZE, **{**PROPS, 'distr': distr})
+            sample = generate(SAMPLE_SIZE, **{**PROPS, 'distr': distr, 'datatype': type_})
             _assert_no_na(sample, type_, distr)
-
-
-def test_base_props():
-    for type_ in ('integer', 'float'):
-        for distr in ('uniform', 'range'):
-            for props in PROPS_MIN_CONFIGS[distr]:
-                sample = get_sample(type_, SAMPLE_SIZE, **props)
-                _assert_no_na(sample, type_, distr)
