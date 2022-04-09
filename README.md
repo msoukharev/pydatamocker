@@ -1,66 +1,34 @@
 # Pydatamocker
 
-Create rich mock data for testing, learning and proofs of concepts!
+Create lots of rich mock data.
 
 ## About
 
-Pydatamocker can generate tabular data of various data types and distributions using random generation and sampling. It is also possible to create a lookups from one table to another. Sampling is very fast even when generating 1'000'000s of records with ~10 fields. The tables are presented in the form of [pandas](https://pandas.pydata.org) DataFrames.
-
-The API for writing the tables to files is easy to use. Just specify the file path and the formatting is inferred from the file extension, be it csv, tsv, json or a simple text file.
+Pydatamocker can generate tabular data of various data types and distributions using random generation and sampling. It is also possible to create a lookups from one table to another. Sampling is very fast even when generating 1'000'000s of records with ~10 fields. Tables are hold their data in DataFrame [see: pandas](https://pandas.pydata.org).
 
 ### Datasets
 
-Some datasets are included with the package. They can be sampled for fields. Datasets included are:
+The package bundles a few datasets in `.pkl` files. They can be sampled by specifying `dataset`.
 
-* ~ 20'000 names of various origins
-* ~ 20'000 surnames of various origins
-
-## Get started
-
-### Testing
-
-Install the latest testing version by running
-
-```sh
-python3 -m pip install --index-url https://test.pypi.org/simple/ pydatamocker
-```
+| Dataset | Description | Count |
+|:-------:|:-----------:|:-----:|
+| first_name | Collection of given names | ~ 20'000 |
+| last_name | Collection of family names | ~ 20'000 |
 
 ### Code example
 
-You can generate mock tables with
-
 ```python
-# Create data table
-acc = MockTable('Accounts')
-# Create an integer field with binomial(10, 0.4) distribution
-acc.add_field('YearsOfExperience', 'integer', distr='binomial', n=10, p=0.4)
-# Field with real randomized first names
-acc.add_field('FirstName', 'first_name')
-# Field with real randomized surnames
-acc.add_field('LastName', 'last_name')
-# Date field
-acc.add_field('DateHired', 'date', distr='uniform', start='2016-10-25', end='2020-02-10')
-# Integer field
-acc.add_field('Id', 'integer', distr='range', start=100000, end=90000000)
+users = pdm.create('Users')
 
-# Create sample
-acc.sample(100_000)
+users.field('FirstName', dataset='first_name')
+users.field('LastName', dataset='last_name')
+users.field('Age', datatype='integer', distr='binomial', n=40, p=0.7)
+users.field('Status', datatype='enum', values=['Active', 'Inactive', 'Pending confirmation'], \
+    weights=[23, 69, 3])
+users.field('Bucket', datatype='enum', values=['1', '2', '3', '4', '5', '6'])
+users.field('DateRegistered', datatype='date', distr='range', start='2010-02-13', end='2021-10-30')
+users.field('LastLogin', datatype='datetime', distr='range', start='2015-02-13T8:10:30', end='2021-10-30T19:30:43')
 
-# Create another table
-audit = MockTable('Audits')
-# Add a lookup
-audit.add_lookup(acc, ['Id'])
-# Add an enum field
-audit.add_field('Subject', 'enum', values=['PPI Access', 'Administrative Reconfiguration', 'Phone contact'], weights=[5, 1, 2])
-audit.add_field('ContactedAt', 'datetime', distr='range', start='2016-10-25', end='2019-03-15')
-
-audit.sample(1_000_000)
-
-# Get pandas dataframe
-acc_df = acc.get_dataframe()
-audit_df = audit.get_dataframe()
-
-# Dump into csv (other formats also supported)
-acc.dump('accounts.csv')
-audit.dump('audits.csv')
+df = users.sample(10_000)
+df.head()
 ```
