@@ -11,3 +11,5 @@
 /.pytest_cache
 # Dist files
 /dist
+
+/actions-runner
