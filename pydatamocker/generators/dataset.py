@@ -1,4 +1,3 @@
-from typing import Iterable
 from ..util.data import load_data
 import os.path as osp
 

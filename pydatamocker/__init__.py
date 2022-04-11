@@ -1,1 +1,1 @@
-from .table import create, createByLoading, Table
+from .table import createEmpty, createFromConfig, createFromJSON, Table

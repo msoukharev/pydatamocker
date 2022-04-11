@@ -2,7 +2,6 @@ import os.path as osp
 import pandas as pd
 from pathlib import Path
 import json
-from ..mocker import get_config, report_progress
 
 
 class Cache:
@@ -49,8 +48,6 @@ get_dataset_path = lambda dataset: osp.join(osp.dirname(__file__), 'data', datas
 def load_data(path: str):
     suffix = Path(path).suffix
     suffix = suffix if suffix != '' else '.csv'
-    report_progress = get_config('report_progress')
-    report_progress and print(f"Loading dataset at {path} ...")
     data = global_cache.get_data(path)
     if data is None:
         data = data_readers[suffix](path)
@@ -59,13 +56,10 @@ def load_data(path: str):
 
 
 def write_dataframe(file: str, dataframe: pd.DataFrame):
-    report_progres = get_config('report_progress')
-    report_progres and print(f"Dumping into file {file}...")
     file_ext = Path(file).suffix
     if file_ext == '' or not file_ext in dataframe_writers.keys():
         file_ext = '.csv'
     dataframe_writers[file_ext](file, dataframe)
-    report_progres and print("Done!")
 
 
 def load_json(file) -> dict:

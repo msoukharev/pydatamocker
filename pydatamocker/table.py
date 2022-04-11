@@ -1,26 +1,26 @@
 import json
 from .builder import build
 
-def create(title: str, config: dict = None):
-    t = Table(title, config)
+def createEmpty(title: str):
+    t = Table({ 'title': title})
     return t
 
-def createByLoading(title: str, config_path: str):
-    t = Table(title, config_path = config_path)
-    return t
+def createFromConfig(config: dict):
+    return Table(config)
+
+def createFromJSON(config_file):
+    with open(config_file, 'r') as f:
+        config = json.load(f)
+        return createFromConfig(config)
 
 class Table:
 
-    def __init__(self, title: str, config: dict = None, config_path: str = None) -> None:
-        if config and config_path:
-            raise ValueError('Both config and config_path were specified')
-        self.title = title
-        if config_path:
-            self.config = json.load(config_path)
-        else:
-            self.config = config or {
-                'fields': {}
-            }
+    def __init__(self, config: dict) -> None:
+        if not config.get('title'):
+            raise ValueError('Field title must be specified')
+        config_ = dict(config)
+        config_['fields'] = config.get('fields') or {}
+        self.config = config_
 
     def dump_config(self, path, pretty=True, indent=2):
 
@@ -34,15 +34,24 @@ class Table:
         self.config['fields'][name] = props
         return self
 
-    def sample(self, size: int):
-        self.dataframe = build(size, self.config['fields'])
+    def sample(self, size: int = None):
+        if not size and not self.config.get('size'):
+            raise ValueError('''
+            No size is specified for sampling. Must be either present in config or passed as an argument
+            ''')
+        size_ = size or self.config['size']
+        self.dataframe = build(size_, self.config['fields'])
         return self.dataframe
 
-    def reorder(self, order):
+    def reorderFields(self, order):
         fields = self.config['fields']
-        neworderfields = dict()
-        for col in order:
-            neworderfields[col] = fields['col']
+        neworderfields = { field:fields[field] for field in order }
+        remainder = { field:fields[field] for field in fields.keys() if field not in set(order) }
+        neworderfields = {
+            **neworderfields,
+            **remainder
+        }
+        self.config['fields'] = neworderfields
 
     def __str__(self):
         return self.dataframe.__str__()
