@@ -1,4 +1,5 @@
 import json
+from pydatamocker.exceptions.table import NO_SIZE, NO_TITLE
 from .builder import build
 
 def createEmpty(title: str):
@@ -17,7 +18,7 @@ class Table:
 
     def __init__(self, config: dict) -> None:
         if not config.get('title'):
-            raise ValueError('Field title must be specified')
+            raise NO_TITLE()
         config_ = dict(config)
         config_['fields'] = config.get('fields') or {}
         self.config = config_
@@ -36,9 +37,7 @@ class Table:
 
     def sample(self, size: int = None):
         if not size and not self.config.get('size'):
-            raise ValueError('''
-            No size is specified for sampling. Must be either present in config or passed as an argument
-            ''')
+            raise NO_SIZE()
         size_ = size or self.config['size']
         self.dataframe = build(size_, self.config['fields'])
         return self.dataframe

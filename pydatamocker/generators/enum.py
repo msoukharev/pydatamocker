@@ -1,6 +1,6 @@
 from pandas import Series
 from math import ceil
-from numpy import chararray, array, concatenate, repeat
+from numpy import concatenate, repeat
 
 DISTRIBUTIONS = { 'ordered', 'shuffled' }
 

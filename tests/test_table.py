@@ -1,4 +1,5 @@
 import pytest
+from pydatamocker.exceptions.table import TableException
 from pydatamocker.table import createEmpty, createFromConfig, createFromJSON
 import os
 from tests.asserts import assert_equals
@@ -81,3 +82,22 @@ def test_reorderFields():
     exp = ';'.join(expectedorder)
     act = ';'.join(tab.config['fields'].keys())
     assert_equals(exp, act, 'Wrong order for fields in the config')
+
+
+def test_no_title():
+    invalid = dict(CONFIG)
+    del invalid['title']
+    try:
+        tab = createFromConfig(invalid)
+    except TableException as _:
+        return
+    assert False, 'No exception raised'
+
+
+def test_no_size():
+    try:
+        tab = createFromConfig(CONFIG)
+        tab.sample()
+    except TableException as _:
+        return
+    assert False, 'No exception raised'

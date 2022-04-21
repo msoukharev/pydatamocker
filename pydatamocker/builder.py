@@ -1,4 +1,6 @@
 from pandas import DataFrame
+
+from pydatamocker.exceptions.builder import DATASET_AND_DATATYPE
 from .generators import dataset, datetime, enum, numeric
 from pandas import Series, DataFrame
 
@@ -7,7 +9,7 @@ def build(size: int, table_spec: dict) -> DataFrame:
         datatype = props.get('datatype')
         dataset_ = props.get('dataset')
         if datatype and dataset_:
-            raise ValueError('Both datatype and dataset were specified')
+            raise DATASET_AND_DATATYPE(dataset_, datatype)
         specifier = datatype or dataset_
         if specifier in dataset.DATASETS:
             return dataset.generate(size, **props)

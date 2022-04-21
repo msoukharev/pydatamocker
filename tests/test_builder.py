@@ -2,6 +2,8 @@ import pytest
 from pydatamocker.builder import build
 from pandas import DataFrame
 
+from pydatamocker.exceptions.builder import BuilderException
+
 FIELDS_SPEC = {
     'FirstName': {
         'dataset': 'first_name'
@@ -47,3 +49,15 @@ def test_build():
     for name in FIELDS_SPEC.keys():
         assert name in set(res.columns), "Column missing " + name
     assert SAMPLE_SIZE == len(res)
+
+def test_raise_dataset_datatype():
+    invalid = dict(FIELDS_SPEC)
+    invalid['FakeField'] = {
+        'dataset': 'a',
+        'datatype': 'b'
+    }
+    try:
+        build(SAMPLE_SIZE, invalid)
+    except BuilderException as _:
+        return
+    assert False, 'No exception raised'

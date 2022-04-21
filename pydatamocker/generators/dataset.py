@@ -1,3 +1,4 @@
+from pydatamocker.exceptions.generator import DATASET_AND_PATH, UNSUPPORTED_DATASETS
 from ..util.data import load_data
 import os.path as osp
 
@@ -9,7 +10,7 @@ def generate(size: int, **props):
 
     def generate_from_dataset(size, dataset):
         if dataset not in DATASETS:
-            raise ValueError('Unsupported dataset')
+            raise UNSUPPORTED_DATASETS(dataset)
         path = osp.join(osp.dirname(__file__), osp.pardir, 'data', dataset + '.pkl')
         data = load_data(path)
         return data.sample(n=size, replace=True).reset_index(drop=True)
@@ -22,7 +23,7 @@ def generate(size: int, **props):
     dataset = props.get('dataset')
     path = props.get('path')
     if dataset and path:
-        raise ValueError('Both dataset and path are specified')
+        raise DATASET_AND_PATH(dataset, path)
     if dataset:
         return generate_from_dataset(size, dataset)
     elif path:
