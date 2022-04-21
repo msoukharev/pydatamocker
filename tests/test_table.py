@@ -46,7 +46,7 @@ CONFIG = {
     'fields': FIELDS_SPEC
 }
 
-TESTCONFIG_PATH = os.path.abspath('./tests/data/testconfig.json')
+TESTCONFIG_PATH = os.path.abspath(os.path.join(__file__, os.pardir, 'data', 'testconfig.json'))
 
 def _assert_table(table):
     res = table.sample(SAMPLE_SIZE)
@@ -66,7 +66,7 @@ def test_createFromConfig():
     _assert_table(tab)
 
 def test_createFromJSON():
-    tab = createFromJSON('./tests/data/testconfig.json')
+    tab = createFromJSON(TESTCONFIG_PATH)
     _assert_table(tab)
 
 def test_sampleWithConfigSize():
