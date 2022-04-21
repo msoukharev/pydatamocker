@@ -1,7 +1,7 @@
 import pytest
 from pydatamocker.table import createEmpty, createFromConfig, createFromJSON
-from tempfile import TemporaryFile
 import os
+from tests.asserts import assert_equals
 
 SAMPLE_SIZE = 1_000
 
@@ -72,7 +72,7 @@ def test_createFromJSON():
 def test_sampleWithConfigSize():
     conf = { ** CONFIG, 'size': 70 }
     tab = createFromConfig(conf)
-    assert 70 == len(tab.sample()), 'Specified size was not read from the config'
+    assert_equals(70, len(tab.sample()), 'Specified size was not read from the config')
 
 def test_reorderFields():
     tab = createFromConfig(CONFIG)
@@ -80,4 +80,4 @@ def test_reorderFields():
     tab.reorderFields(expectedorder[:3])
     exp = ';'.join(expectedorder)
     act = ';'.join(tab.config['fields'].keys())
-    assert exp == act, 'Wrong order for fields in the config'
+    assert_equals(exp, act, 'Wrong order for fields in the config')

@@ -1,6 +1,6 @@
 import pytest
 from pydatamocker.generators.enum import *
-from ..asserts import assert_subset
+from ..asserts import assert_equals, assert_subset
 
 SAMPLE_SIZE = 500_000
 
@@ -42,4 +42,4 @@ def test_ordered():
     act = ','.join(sample)
     sample.sort_values()
     exp = ','.join(sample)
-    assert exp == act, 'Elements were not ordered'
+    assert_equals(exp, act, 'Elements were not ordered')
