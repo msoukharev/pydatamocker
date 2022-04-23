@@ -24,13 +24,13 @@ def integer_range(**props):
     return np.arange(props['start'], props['end'],
         _range_step(props['start'], props['end'], props['size'])).astype(int)[:props['size']]
 
-def integer_normal(mean, std, size, **_):
+def integer_normal(**props):
     # binomial approximation to normal
     # mean = n p
     # std = n p (1 - p)
-    p = - (std - mean)
-    n = mean // p
-    return integer_binomial(n, p, size)
+    p = 1 - (props['std'] / props['mean'])
+    n = round(props['mean'] / p)
+    return integer_binomial(**{ 'n': n, 'p': p, 'size': props['size'] })
 
 TYPES = { 'float', 'integer' }
 

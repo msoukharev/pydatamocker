@@ -16,7 +16,7 @@ PROPS = {
 
 MOCK_TYPE_TREE = {
     'float': {'uniform', 'normal', 'range'},
-    'integer': {'uniform', 'binomial', 'range'}
+    'integer': {'uniform', 'binomial', 'range', 'normal'}
 }
 
 PROPS_MIN_CONFIGS = {
