@@ -58,6 +58,6 @@ def test_raise_dataset_datatype():
     }
     try:
         build(SAMPLE_SIZE, invalid)
-    except BuilderException as _:
+    except ValueError as _:
         return
     assert False, 'No exception raised'

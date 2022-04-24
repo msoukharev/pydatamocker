@@ -6,5 +6,5 @@ SAMPLE_SIZE = 1_000_000
 
 def test_no_nans_dataset():
     for dataset in DATASETS:
-        sample = generate(SAMPLE_SIZE, **{ 'dataset': dataset })
+        sample = generate(**{ 'dataset': dataset, 'size': SAMPLE_SIZE })
         assert_equals(0, sample.isna().sum(), f"Sample has NaN values. Dataset: {dataset}")

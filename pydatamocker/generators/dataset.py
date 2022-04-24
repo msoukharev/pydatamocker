@@ -1,3 +1,4 @@
+from pandas import Series
 from pydatamocker.exceptions.generator import DATASET_AND_PATH, UNSUPPORTED_DATASETS
 from ..util.data import load_data
 import os.path as osp
@@ -6,7 +7,7 @@ DATASETS = {
     'first_name', 'last_name'
 }
 
-def generate(size: int, **props):
+def generate(**props) -> Series:
 
     def generate_from_dataset(size, dataset):
         if dataset not in DATASETS:
@@ -22,6 +23,7 @@ def generate(size: int, **props):
 
     dataset = props.get('dataset')
     path = props.get('path')
+    size = props['size']
     if dataset and path:
         raise DATASET_AND_PATH(dataset, path)
     if dataset:
@@ -29,3 +31,5 @@ def generate(size: int, **props):
     elif path:
         fields = props.get('fields')
         return generate_from_data(size, path, fields)
+    else:
+        raise ValueError('Missing size')

@@ -1,5 +1,4 @@
 import pytest
-from pydatamocker.exceptions.table import TableException
 from pydatamocker.table import createEmpty, createFromConfig, createFromJSON
 import os
 from tests.asserts import assert_equals
@@ -89,7 +88,7 @@ def test_no_title():
     del invalid['title']
     try:
         tab = createFromConfig(invalid)
-    except TableException as _:
+    except ValueError as _:
         return
     assert False, 'No exception raised'
 
@@ -98,6 +97,6 @@ def test_no_size():
     try:
         tab = createFromConfig(CONFIG)
         tab.sample()
-    except TableException as _:
+    except ValueError as _:
         return
     assert False, 'No exception raised'

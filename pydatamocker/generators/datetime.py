@@ -28,7 +28,7 @@ _distribution_samples['uniform'] = (
     )
 )
 
-def generate(size: int, **props):
+def generate(**props):
     props = dict(props)
     distr = props['distr']
-    return pd.Series( _distribution_samples[distr](**{ **props, 'size' : size }) )
+    return pd.Series( _distribution_samples[distr](**props) )

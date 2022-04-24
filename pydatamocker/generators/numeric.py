@@ -34,7 +34,7 @@ def integer_normal(**props):
 
 TYPES = { 'float', 'integer' }
 
-def generate(size: int, **props) -> Series:
+def generate(**props) -> Series:
     switch_ = {
         'float': {
             'normal': float_normal,
@@ -50,6 +50,7 @@ def generate(size: int, **props) -> Series:
     }
     datatype = props['datatype']
     distr = props['distr']
+    size = props['size']
     nums = switch_[datatype][distr](**{ **props, 'size': size })
     if distr == 'uniform' and props.get('round'):
         nums = np.around(nums, props['round'])
