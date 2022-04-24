@@ -1,45 +1,17 @@
 import pytest
-from pydatamocker.table import createEmpty, createFromConfig, createFromJSON
+from pydatamocker.table import Table, createEmpty, createFromConfig, createFromJSON
 import os
 from tests.asserts import assert_equals
+import json
+
 
 SAMPLE_SIZE = 1_000
 
-FIELDS_SPEC = {
-    'FirstName': {
-        'dataset': 'first_name'
-    },
-    'LastName': {
-        'dataset': 'last_name'
-    },
-    'Age': {
-        'datatype': 'integer',
-        'distr': 'binomial',
-        'n': 40,
-        'p': 0.7
-    },
-    'FormStatus': {
-        'datatype': 'enum',
-        'values': ['Overdue', 'Pending', 'Completed'],
-        'weights': [2, 8, 90]
-    },
-    'Bucket': {
-        'datatype': 'enum',
-        'values': ['1', '2', '3']
-    },
-    'Registered': {
-        'datatype': 'date',
-        'distr': 'range',
-        'start': '2018-02-13',
-        'end': '2020-10-30'
-    },
-    'LastLogin': {
-        'datatype': 'datetime',
-        'distr': 'range',
-        'start': '2020-09-23T10:10:30',
-        'end': '2022-03-23T20:20:00'
-    }
-}
+def load_spec() -> dict:
+    with open(os.path.join(os.path.dirname(__file__), 'data', 'testconfig.json'), 'r') as f:
+        return json.load(f)
+
+FIELDS_SPEC = load_spec()['fields']
 
 CONFIG = {
     'title': 'TestTable',
@@ -48,17 +20,17 @@ CONFIG = {
 
 TESTCONFIG_PATH = os.path.abspath(os.path.join(__file__, os.pardir, 'data', 'testconfig.json'))
 
-def _assert_table(table):
+def _assert_table(table: Table):
     res = table.sample(SAMPLE_SIZE)
     assert SAMPLE_SIZE == len(res), 'Wrong number of records'
     assert len(FIELDS_SPEC) == len(res.columns)
-    for name in FIELDS_SPEC.keys():
-        assert name in set(res.columns), 'Column missing: ' + name
+    for field in FIELDS_SPEC:
+        assert field['name'] in set(res.columns), 'Column missing: ' + field['name']
 
 def test_createEmpty():
     tab = createEmpty('Test')
-    for name, spec in FIELDS_SPEC.items():
-        tab.field(name, **spec)
+    for spec in FIELDS_SPEC:
+        tab.field(**spec)
     _assert_table(tab)
 
 def test_createFromConfig():
@@ -74,20 +46,11 @@ def test_sampleWithConfigSize():
     tab = createFromConfig(conf)
     assert_equals(70, len(tab.sample()), 'Specified size was not read from the config')
 
-def test_reorderFields():
-    tab = createFromConfig(CONFIG)
-    expectedorder = ['FormStatus', 'LastName', 'FirstName', 'Age', 'Bucket', 'Registered', 'LastLogin']
-    tab.reorderFields(expectedorder[:3])
-    exp = ';'.join(expectedorder)
-    act = ';'.join(tab.config['fields'].keys())
-    assert_equals(exp, act, 'Wrong order for fields in the config')
-
-
 def test_no_title():
     invalid = dict(CONFIG)
     del invalid['title']
     try:
-        tab = createFromConfig(invalid)
+        _ = createFromConfig(invalid)
     except ValueError as _:
         return
     assert False, 'No exception raised'

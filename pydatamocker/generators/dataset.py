@@ -9,14 +9,14 @@ DATASETS = {
 
 def generate(**props) -> Series:
 
-    def generate_from_dataset(size, dataset):
+    def generate_from_dataset(size, dataset) -> Series:
         if dataset not in DATASETS:
             raise UNSUPPORTED_DATASETS(dataset)
         path = osp.join(osp.dirname(__file__), osp.pardir, 'data', dataset + '.pkl')
         data = load_data(path)
         return data.sample(n=size, replace=True).reset_index(drop=True)
 
-    def generate_from_data(size, path, fields = None):
+    def generate_from_data(size, path, fields = None) -> Series:
         data = load_data(path)
         samplesource = data[fields] if fields else data
         return samplesource.sample(n=size, replace=True).reset_index(drop=True)
@@ -27,9 +27,11 @@ def generate(**props) -> Series:
     if dataset and path:
         raise DATASET_AND_PATH(dataset, path)
     if dataset:
-        return generate_from_dataset(size, dataset)
+        series = generate_from_dataset(size, dataset)
     elif path:
         fields = props.get('fields')
-        return generate_from_data(size, path, fields)
+        series = generate_from_data(size, path, fields)
     else:
         raise ValueError('Missing size')
+    series.name = props['name']
+    return series

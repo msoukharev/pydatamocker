@@ -1,9 +1,12 @@
 import json
-from typing import Iterable, Optional
+from typing import Optional
+from pandas import DataFrame
 from .builder import build
+from .fieldspec import create
+
 
 def createEmpty(title: str):
-    t = Table({ 'title': title})
+    t = Table({ 'title': title })
     return t
 
 def createFromConfig(config: dict):
@@ -20,37 +23,26 @@ class Table:
         if not config.get('title'):
             raise ValueError('Missing title')
         config_ = dict(config)
-        config_['fields'] = config.get('fields') or {}
+        config_['fields'] = config.get('fields') or []
         self.config = config_
 
     def dump_config(self, path, pretty=True, indent=2):
-
         def write_json(obj: dict, path: str, pretty: bool, indent: int):
             with open(path, 'wt', ) as f:
                 json.dump(obj, f, indent=(indent if pretty else None))
-
         write_json(self.config, path, pretty, indent)
 
-    def field(self, name: str, **props):
-        self.config['fields'][name] = props
+    def field(self, **props):
+        self.config['fields'].append(props)
         return self
 
-    def sample(self, size: Optional[int] = None):
+    def sample(self, size: Optional[int] = None) -> DataFrame:
         if not size and not self.config.get('size'):
             raise ValueError('Missing size')
         size_ = size or self.config['size']
-        self.dataframe = build(size_, self.config['fields'])
+        build_spec = create(self.config)
+        self.dataframe = build(size_, build_spec)
         return self.dataframe
-
-    def reorderFields(self, order: Iterable):
-        fields = self.config['fields']
-        neworderfields = { field:fields[field] for field in order }
-        remainder = { field:fields[field] for field in fields.keys() if field not in set(order) }
-        neworderfields = {
-            **neworderfields,
-            **remainder
-        }
-        self.config['fields'] = neworderfields
 
     def __str__(self):
         return self.dataframe.__str__()

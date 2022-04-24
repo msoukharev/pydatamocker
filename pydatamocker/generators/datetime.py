@@ -31,4 +31,4 @@ _distribution_samples['uniform'] = (
 def generate(**props):
     props = dict(props)
     distr = props['distr']
-    return pd.Series( _distribution_samples[distr](**props) )
+    return pd.Series(_distribution_samples[distr](**props), name=props.get('name'))

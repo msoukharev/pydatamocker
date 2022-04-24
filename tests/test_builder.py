@@ -1,61 +1,28 @@
 import pytest
 from pydatamocker.builder import build
 from pandas import DataFrame
+import json
+import os
 
-from pydatamocker.exceptions.builder import BuilderException
+def load_spec() -> dict:
+    with open(os.path.join(os.path.dirname(__file__), 'data', 'testconfig.json'), 'r') as f:
+        return json.load(f)
 
-FIELDS_SPEC = {
-    'FirstName': {
-        'dataset': 'first_name'
-    },
-    'LastName': {
-        'dataset': 'last_name'
-    },
-    'Age': {
-        'datatype': 'integer',
-        'distr': 'binomial',
-        'n': 40,
-        'p': 0.7
-    },
-    'FormStatus': {
-        'datatype': 'enum',
-        'values': ['Overdue', 'Pending', 'Completed'],
-        'weights': [2, 8, 90]
-    },
-    'Bucket': {
-        'datatype': 'enum',
-        'values': ['1', '2', '3']
-    },
-    'Registered': {
-        'datatype': 'date',
-        'distr': 'range',
-        'start': '2018-02-13',
-        'end': '2020-10-30'
-    },
-    'LastLogin': {
-        'datatype': 'datetime',
-        'distr': 'range',
-        'start': '2020-09-23T10:10:30',
-        'end': '2022-03-23T20:20:00'
-    }
-}
+FIELDS_SPEC = load_spec()['fields']
 
-SAMPLE_SIZE = 1_000_000
+SAMPLE_SIZE = 500_000
 
 def test_build():
     res = build(SAMPLE_SIZE, FIELDS_SPEC)
     assert isinstance(res, (DataFrame)), "DataFrame type was not returned"
     assert len(FIELDS_SPEC) == len(res.columns), "Wrong number of columns"
-    for name in FIELDS_SPEC.keys():
-        assert name in set(res.columns), "Column missing " + name
+    for spec in FIELDS_SPEC:
+        assert spec['name'] in set(res.columns), "Column missing " + spec['name']
     assert SAMPLE_SIZE == len(res)
 
 def test_raise_dataset_datatype():
-    invalid = dict(FIELDS_SPEC)
-    invalid['FakeField'] = {
-        'dataset': 'a',
-        'datatype': 'b'
-    }
+    invalid = list(FIELDS_SPEC)
+    invalid.append({ 'FakeField': 'name', 'dataset': 'a', 'datatype': 'b' })
     try:
         build(SAMPLE_SIZE, invalid)
     except ValueError as _:

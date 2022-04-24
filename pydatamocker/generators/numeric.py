@@ -54,4 +54,4 @@ def generate(**props) -> Series:
     nums = switch_[datatype][distr](**{ **props, 'size': size })
     if distr == 'uniform' and props.get('round'):
         nums = np.around(nums, props['round'])
-    return Series(nums)
+    return Series(nums, name=props['name'])

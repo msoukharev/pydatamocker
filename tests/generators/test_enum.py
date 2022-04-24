@@ -6,17 +6,20 @@ SAMPLE_SIZE = 500_000
 
 PROPS = [
     {
+        'name': 'test',
         'values': [1, 9, 5, 6, 7, -1, 19],
         'weights': [3, 5, 6, 7, 3, 2, 10]
     },
     {
+        'name': 'test',
         'values': ['New', 'Deprecated', 'Retired'],
         'weights': [0.3, 0.2, 0.2]
     },
     {
+        'name': 'test',
         'values': ['New', 'Deprecated', 'Retired'],
         'weights': [0.3, 0.2, 0.2],
-        'distr': 'ordered'
+        'distr': 'order'
     }
 ]
 

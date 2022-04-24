@@ -4,10 +4,12 @@ from ..asserts import assert_equals
 
 PROPS = {
     'date': {
+        'name': 'test',
         'start': '2019-02-20',
         'end': '2019-03-30'
     },
     'datetime': {
+        'name': 'test',
         'start': '2019-02-28T11:30:00Z',
         'end': '2019-03-02T21:30:00Z'
     }

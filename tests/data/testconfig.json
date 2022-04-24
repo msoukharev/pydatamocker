@@ -1,39 +1,46 @@
 {
     "title": "TestTable",
     "size": 2000,
-    "fields": {
-        "FirstName": {
+    "fields": [
+        {
+            "name": "FirstName",
             "dataset": "first_name"
         },
-        "LastName": {
+        {
+            "name": "LastName",
             "dataset": "last_name"
         },
-        "Age": {
+        {
+            "name": "Age",
             "datatype": "integer",
-            "distr": "binomial",
-            "n": 40,
-            "p": 0.7
+            "distr": "normal",
+            "mean": 40,
+            "std": 0.7
         },
-        "FormStatus": {
+        {
+            "name": "PaymentStatus",
             "datatype": "enum",
             "values": ["Overdue", "Pending", "Completed"],
             "weights": [2, 8, 90]
         },
-        "Bucket": {
+        {
+            "name": "PaymentStatus",
             "datatype": "enum",
             "values": ["1", "2", "3"]
         },
-        "Registered": {
+        {
+            "name": "DateRegistered",
             "datatype": "date",
             "distr": "range",
             "start": "2018-02-13",
             "end": "2020-10-30"
         },
-        "LastLogin": {
+        {
+            "name": "LastLogin",
             "datatype": "datetime",
             "distr": "range",
             "start": "2020-09-23T10:10:30",
             "end": "2022-03-23T20:20:00"
         }
-    }
+    ]
 }
