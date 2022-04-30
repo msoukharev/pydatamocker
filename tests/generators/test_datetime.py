@@ -1,5 +1,5 @@
 import pytest
-from pydatamocker.generators.datetime import generate
+from pydatamocker.generators.datetime import create
 from ..asserts import assert_equals
 
 PROPS = {
@@ -25,9 +25,7 @@ SAMPLE_SIZE = 25723
 def test_no_nans():
     for type_, distributions in MOCK_TYPE_TREE.items():
         for distr in distributions:
-            sample = generate(
-                **{ **PROPS[type_], 'distr': distr, 'datatype': type_, 'size': SAMPLE_SIZE }
-            )
+            sample = create(**{ **PROPS[type_], 'distr': distr, 'datatype': type_ })(SAMPLE_SIZE)
             assert_equals(0, sample.isna().sum(),
                 f"NaN values are present in the series. Type: {type_}, Distribution: {distr}"
             )

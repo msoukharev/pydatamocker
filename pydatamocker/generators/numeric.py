@@ -1,57 +1,75 @@
 import numpy as np
 from pandas import Series
+from pydatamocker.types import ColumnGenerator
 
-def _range_step(min: int, max: int, size: int) :
-    return (max - min) / size
-
-def float_normal(**props):
-     return np.random.normal(props['mean'], props['std'], props['size'])
-
-def float_uniform(**props):
-    return np.random.uniform(props['min'], props['max'], props['size'])
-
-def float_range(**props):
-    return np.arange(props['start'], props['end'],
-        _range_step(props['start'], props['end'], props['size'])).astype(float)[:props['size']]
-
-def integer_uniform(**props):
-    return np.random.randint(props['min'], props['max'], props['size'])
-
-def integer_binomial(**props):
-    return np.random.binomial(props['n'], props['p'], props['size'])
-
-def integer_range(**props):
-    return np.arange(props['start'], props['end'],
-        _range_step(props['start'], props['end'], props['size'])).astype(int)[:props['size']]
-
-def integer_normal(**props):
-    # binomial approximation to normal
-    # mean = n p
-    # std = n p (1 - p)
-    p = 1 - (props['std'] / props['mean'])
-    n = round(props['mean'] / p)
-    return integer_binomial(**{ 'n': n, 'p': p, 'size': props['size'] })
 
 TYPES = { 'float', 'integer' }
 
-def generate(**props) -> Series:
-    switch_ = {
-        'float': {
-            'normal': float_normal,
-            'uniform': float_uniform,
-            'range': float_range
-        },
-        'integer': {
-            'normal': integer_normal,
-            'uniform': integer_uniform,
-            'range': integer_range,
-            'binomial': integer_binomial
-        }
-    }
+
+def _range_step(min: int, max: int, size: int):
+    return (max - min) / size
+
+
+def from_normal_float(mean: float, std: float) -> ColumnGenerator:
+    return lambda size: Series(np.random.normal(mean, std, size))
+
+
+def from_uniform_float(min_: float, max_: float) -> ColumnGenerator:
+    return lambda size: Series(np.random.uniform(min_, max_, size))
+
+
+def from_range_float(start: float, end: float) -> ColumnGenerator:
+    return lambda size: Series(np.arange(start, end,
+        _range_step(round(start), round(end), size)).astype(float)[:size]
+    )
+
+
+def from_uniform_integer(min: int, max: int) -> ColumnGenerator:
+    return lambda size: Series(np.random.randint(min, max, size))
+
+
+def from_binomial_integer(n: int, p: float) -> ColumnGenerator:
+    return lambda size: Series(np.random.binomial(n, p, size))
+
+
+def from_range_integer(start: int, end: int) -> ColumnGenerator:
+    return lambda size: Series(
+        np.arange(start, end, _range_step(start, end, size)).astype(int)[:size]
+    )
+
+
+def from_normal_integer(mean: int, std: float) -> ColumnGenerator:
+    # binomial approximation to normal
+    # mean = n p
+    # std = n p (1 - p)
+    p = 1 - (std / mean)
+    n = round(mean / p)
+    return from_binomial_integer(n, p)
+
+
+def create(**props) -> ColumnGenerator:
     datatype = props['datatype']
     distr = props['distr']
-    size = props['size']
-    nums = switch_[datatype][distr](**{ **props, 'size': size })
-    if distr == 'uniform' and props.get('round'):
-        nums = np.around(nums, props['round'])
-    return Series(nums, name=props['name'])
+
+    if datatype == 'float':
+        if distr == 'normal':
+            return from_normal_float(props['mean'], props['std'])
+        if distr == 'uniform':
+            return from_uniform_float(props['min'], props['max'])
+        if distr == 'range':
+            return from_range_float(props['start'], props['end'])
+        else:
+            raise ValueError(f'Unsupported distribution {distr} for type float')
+    elif datatype == 'integer':
+        if distr == 'normal':
+            return from_normal_integer(props['mean'], props['std'])
+        if distr == 'uniform':
+            return from_uniform_integer(props['min'], props['max'])
+        if distr == 'range':
+            return from_range_integer(props['start'], props['end'])
+        if distr == 'binomial':
+            return from_binomial_integer(props['n'], props['p'])
+        else:
+            raise ValueError(f'Unsupported distribution {distr} for type integer')
+    else:
+        raise ValueError(f'Unsupported type ' + datatype)

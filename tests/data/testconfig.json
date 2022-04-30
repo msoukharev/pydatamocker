@@ -15,7 +15,7 @@
             "datatype": "integer",
             "distr": "normal",
             "mean": 40,
-            "std": 0.7
+            "std": 5
         },
         {
             "name": "PaymentStatus",

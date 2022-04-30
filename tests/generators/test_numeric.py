@@ -1,5 +1,5 @@
 import pytest
-from pydatamocker.generators.numeric import generate
+from pydatamocker.generators.numeric import create
 from ..asserts import assert_equals
 
 PROPS = {
@@ -38,5 +38,5 @@ def _assert_no_na(sample, type_, distr):
 def test_no_nans():
     for type_, distributions in MOCK_TYPE_TREE.items():
         for distr in distributions:
-            sample = generate(**{**PROPS, 'distr': distr, 'datatype': type_, 'size': SAMPLE_SIZE, 'name': 'text'})
+            sample = create(**{**PROPS, 'distr': distr, 'datatype': type_})(SAMPLE_SIZE)
             _assert_no_na(sample, type_, distr)

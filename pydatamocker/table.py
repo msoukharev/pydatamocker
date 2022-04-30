@@ -9,8 +9,10 @@ def createEmpty(title: str):
     t = Table({ 'title': title })
     return t
 
+
 def createFromConfig(config: dict):
     return Table(config)
+
 
 def createFromJSON(config_file):
     with open(config_file, 'r') as f:

@@ -1,6 +1,8 @@
+from typing import Literal
 import pandas as pd
 from numpy import arange
-from ..util.functions import composer
+from pydatamocker.types import ColumnGenerator
+
 
 TYPES = {
     'datetime', 'date'
@@ -11,24 +13,20 @@ default_formatter = {
     'date': '%Y-%m-%d'
 }
 
-_distribution_samples = {
-    'range': lambda **kw: composer(
-        lambda **kw: pd.date_range(start=kw['start'], end=kw['end'], periods=kw['size']),
-        lambda f, **kw: f.to_series(index=arange(kw['size'])),
-        lambda f, **kw: f.dt.strftime(default_formatter[kw['datatype']]),
-        **kw
-    ),
-}
+def from_range(start: str, end: str, datatype: Literal['datetime', 'date']) -> ColumnGenerator:
+    return lambda size: pd.date_range(start = start, end = end, periods=size)\
+        .to_series(index=arange(size)).dt.strftime(default_formatter[datatype])
 
-_distribution_samples['uniform'] = (
-    lambda **kw: composer(
-        lambda **kw: _distribution_samples['range'](**kw),
-        lambda f, **_: f.sample(frac=1).reset_index(drop=True),
-        **kw
-    )
-)
 
-def generate(**props):
+def from_uniform(start: str, end: str, datatype: Literal['datetime', 'date']) -> ColumnGenerator:
+    return lambda size: from_range(start, end, datatype)(size).sample(frac=1).reset_index(drop=True)
+
+def create(**props) -> ColumnGenerator:
     props = dict(props)
     distr = props['distr']
-    return pd.Series(_distribution_samples[distr](**props), name=props.get('name'))
+    if distr == 'range':
+        return from_range(props['start'], props['end'], datatype=props['datatype'])
+    elif distr == 'uniform':
+        return from_uniform(props['start'], props['end'], datatype=props['datatype'])
+    else:
+        raise ValueError('Unsupported distribution: ' + distr)

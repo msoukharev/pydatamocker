@@ -1,14 +1,20 @@
 from multiprocessing import Pool
-from typing import Iterable
+from typing import Any, Iterable
 from pandas import Series, DataFrame, concat
-from .generators import factory
+from psutil import cpu_count
+from .generators import create
 
-def _apply(props) -> Series:
-    return factory(**props)(**props)
+
+def _apply(props: Any) -> Series:
+    generate = create(**props)
+    series = generate(props['size'])
+    series.name = props['name']
+    return series
+
 
 def build(size: int, field_specs: Iterable) -> DataFrame:
-    if size >= 100_000:
-        with Pool(6) as p:
+    if size >= 300_000 or cpu_count() > 3:
+        with Pool(cpu_count() // 2) as p:
             res = p.map(_apply, [
                 {**field, 'size': size} for field in field_specs
             ])

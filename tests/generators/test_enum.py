@@ -19,15 +19,14 @@ PROPS = [
         'name': 'test',
         'values': ['New', 'Deprecated', 'Retired'],
         'weights': [0.3, 0.2, 0.2],
-        'distr': 'order'
+        'distr': 'ordered'
     }
 ]
 
 def test_sample_is_subset():
     for props in PROPS:
         props = dict(props)
-        props['size'] = SAMPLE_SIZE
-        uniques_set = set(generate(**props).unique())
+        uniques_set = set(create(**props)(SAMPLE_SIZE).unique())
         vals = props['values']
         vals_set = set(vals)
         assert uniques_set.issubset(vals_set), \
@@ -36,16 +35,14 @@ def test_sample_is_subset():
 def test_no_weight():
     props = dict(PROPS[0])
     del props['weights']
-    props['size'] = SAMPLE_SIZE
-    sample = generate(**props)
+    sample = create(**props)(SAMPLE_SIZE)
     assert_subset(sample.unique(), set(props['values']),
         'The sample values are not a subset of the specified options'
     )
 
 def test_ordered():
     spec = dict(PROPS[2])
-    spec['size'] = SAMPLE_SIZE
-    sample = generate(**spec)
+    sample = create(**spec)(SAMPLE_SIZE)
     act = ','.join(sample)
     sample.sort_values()
     exp = ','.join(sample)
