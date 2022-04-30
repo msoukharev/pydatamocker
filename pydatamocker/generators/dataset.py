@@ -1,5 +1,4 @@
-from typing import Callable, Iterable, Optional
-from pandas import Series
+from typing import Iterable, Optional
 from pydatamocker.exceptions.generator import DATASET_AND_PATH, UNSUPPORTED_DATASETS
 from pydatamocker.types import ColumnGenerator
 from ..util.data import load_data

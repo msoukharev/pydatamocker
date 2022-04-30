@@ -1,15 +1,17 @@
-from typing import Any, Callable, Iterable, Union
+from typing import Any, Iterable, Union
 from pandas import Series
 from math import ceil
 from numpy import concatenate, repeat
 
+from pydatamocker.types import ColumnGenerator
+
 DISTRIBUTIONS = { 'ordered', 'shuffled' }
 
 def from_shuffled(values: Iterable[Any], weights: Iterable[Union[int, float]]) \
-        -> Callable[[int], Series]:
+        -> ColumnGenerator:
     return lambda size: Series(values).sample(n=size, replace=True, weights=weights).reset_index(drop=True)  # type: ignore
 
-def from_ordered(values: Iterable[Any], counts: Iterable[int]) -> Callable[[int], Series]:
+def from_ordered(values: Iterable[Any], counts: Iterable[int]) -> ColumnGenerator:
     def aux(size: int, values: Iterable[Any], counts: Iterable[int]):
         weightsum = sum(counts)
         counts = [ ceil(size * (ct / weightsum)) for ct in counts]
@@ -18,7 +20,7 @@ def from_ordered(values: Iterable[Any], counts: Iterable[int]) -> Callable[[int]
         return Series(data=arrays[:size])
     return lambda size: aux(size, values, counts)
 
-def create(**props) -> Callable[[int], Series]:
+def create(**props) -> ColumnGenerator:
     values = props['values']
     weights = props.get('weights') or [1] * len(values)
     distr = props.get('distr') or 'ordered'
