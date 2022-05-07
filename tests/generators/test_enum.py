@@ -1,48 +1,53 @@
 import pytest
 from pydatamocker.generators.enum import *
-from ..asserts import assert_equals, assert_subset
+from tests.util import assert_nonempty_series, assert_series_superset
+from ..asserts import assert_equals
 
-SAMPLE_SIZE = 500_000
 
-PROPS = [
+SAMPLE_SIZE = 5_000
+
+
+SPECS: Iterable[EnumFieldSpec] = [
     {
-        'name': 'test',
-        'values': [1, 9, 5, 6, 7, -1, 19],
-        'weights': [3, 5, 6, 7, 3, 2, 10]
+        'type': 'enum',
+        'value': {
+            'values': [1, 9, 5, 6, 7, -1, 19],
+            'weights': [3, 5, 6, 7, 3, 2, 10]
+        }
     },
     {
-        'name': 'test',
-        'values': ['New', 'Deprecated', 'Retired'],
-        'weights': [0.3, 0.2, 0.2]
+        'type': 'enum',
+        'value': {
+            'values': ['New', 'Deprecated', 'Retired'],
+            'weights': [0.3, 0.2, 0.2]
+        }
     },
     {
-        'name': 'test',
-        'values': ['New', 'Deprecated', 'Retired'],
-        'weights': [0.3, 0.2, 0.2],
-        'distr': 'ordered'
+        'type': 'enum',
+        'value': {
+            'values': ['New', 'Deprecated', 'Retired'],
+            'weights': [0.3, 0.2, 0.2],
+            'distr': 'ordered'
+        }
     }
 ]
 
-def test_sample_is_subset():
-    for props in PROPS:
-        props = dict(props)
-        uniques_set = set(create(**props)(SAMPLE_SIZE).unique())
-        vals = props['values']
-        vals_set = set(vals)
-        assert uniques_set.issubset(vals_set), \
-            f"Unique values in the sample of choices {vals} are not the subset of the choices"
+def test_enum():
+    for spec in SPECS:
+        sample = create(spec)(SAMPLE_SIZE)
+        assert_nonempty_series(sample)
+        assert_series_superset(sample, spec['value']['values'])
 
 def test_no_weight():
-    props = dict(PROPS[0])
-    del props['weights']
-    sample = create(**props)(SAMPLE_SIZE)
-    assert_subset(sample.unique(), set(props['values']),
-        'The sample values are not a subset of the specified options'
-    )
+    spec: EnumFieldSpec = SPECS[0]
+    del spec['value']['weights']
+    sample = create(spec)(SAMPLE_SIZE)
+    assert_nonempty_series(sample)
+    assert_series_superset(sample, spec['value']['values'])
 
 def test_ordered():
-    spec = dict(PROPS[2])
-    sample = create(**spec)(SAMPLE_SIZE)
+    spec = SPECS[2]
+    sample = create(spec)(SAMPLE_SIZE)
     act = ','.join(sample)
     sample.sort_values()
     exp = ','.join(sample)

@@ -1,6 +1,6 @@
 from typing import Iterable, Optional
-from pydatamocker.exceptions.generator import DATASET_AND_PATH, UNSUPPORTED_DATASETS
-from pydatamocker.types import ColumnGenerator
+from pydatamocker.exceptions.generator import UNSUPPORTED_DATASETS
+from pydatamocker.types import ColumnGenerator, DatasetFieldSpec, FieldSpec
 from ..util.data import load_data
 import os.path as osp
 
@@ -17,21 +17,9 @@ def from_dataset(dataset: str) -> ColumnGenerator:
     func = lambda size: data.sample(n=size, replace=True).reset_index(drop=True)
     return func
 
-def from_datapath(path: str, fields: Optional[Iterable[str]] = None) -> ColumnGenerator:
-    data = load_data(path)
-    samplesource = data[fields] if fields else data
-    return lambda size: samplesource.sample(n=size, replace=True).reset_index(drop=True)
-
-
-def create(**props) -> ColumnGenerator:
-    dataset: Optional[str] = props.get('dataset')
-    path: Optional[str] = props.get('path')
-    if dataset and path:
-        raise DATASET_AND_PATH(dataset, path)
+def create(spec: DatasetFieldSpec) -> ColumnGenerator:
+    dataset: str = spec['value']
     if dataset:
         return from_dataset(dataset)
-    elif path:
-        fields = props.get('fields')
-        return from_datapath(path, fields)
     else:
         raise ValueError('Missing size')

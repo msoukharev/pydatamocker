@@ -19,6 +19,7 @@ def createFromJSON(config_file):
         config = json.load(f)
         return createFromConfig(config)
 
+
 class Table:
 
     def __init__(self, config: dict) -> None:

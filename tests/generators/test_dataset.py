@@ -1,10 +1,12 @@
+from typing import Literal, get_args
 import pytest
-from pydatamocker.generators.dataset import create, DATASETS
+from pydatamocker.generators.dataset import create
+from pydatamocker.types import DATASETS, Dataset, DatasetFieldSpec
 from ..asserts import assert_equals
 
 SAMPLE_SIZE = 1_000_000
 
 def test_no_nans_dataset():
     for dataset in DATASETS:
-        sample = create(**{ 'dataset': dataset, 'name': 'test' })(SAMPLE_SIZE)
+        sample = create({'value': dataset, 'type': 'dataset' })(SAMPLE_SIZE)
         assert_equals(0, sample.isna().sum(), f"Sample has NaN values. Dataset: {dataset}")

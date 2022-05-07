@@ -1,8 +1,11 @@
 import pytest
+from typing import cast
 from pydatamocker.generators.numeric import create
-from ..asserts import assert_equals
+from pydatamocker.types import FLOAT_DISTRIBUTIONS, INTEGER_DISTRIBUTIONS, FloatFieldSpec, IntegerFieldSpec
+from tests.util import assert_nonempty_series
 
-PROPS = {
+
+INTEGER_ARGUMENTS = {
     'mean': 10,
     'std': 3,
     'n': 10,
@@ -11,32 +14,48 @@ PROPS = {
     'max': 30,
     'start': 30,
     'end': 5000,
+}
+
+
+FLOAT_ARGUMENTS = {
+    'mean': 10.3,
+    'std': 3.1,
+    'min': 10.1,
+    'max': 30.3223,
+    'start': 30.0,
+    'end': 5000.002,
     'round': 4
 }
 
-MOCK_TYPE_TREE = {
-    'float': {'uniform', 'normal', 'range'},
-    'integer': {'uniform', 'binomial', 'range', 'normal'}
-}
 
-PROPS_MIN_CONFIGS = {
-    'uniform': [
-        {'min': -323 }, {'max': 9311}, {}
-    ],
-    'range': [
-        {'start': -314}, {'end': 12323}, {}
-    ]
-}
+SAMPLE_SIZE = 180_000
 
-SAMPLE_SIZE = 320030
 
-def _assert_no_na(sample, type_, distr):
-    assert_equals(0, sample.isna().sum(),
-        f"NaN values are present in the series. Type: {type_}, Distribution: {distr}"
-    )
+def test_integer_distr():
+    for distr in INTEGER_DISTRIBUTIONS:
+        spec = {
+            'type': 'integer',
+            'value': {
+                'distr': {
+                    'name': distr,
+                    **INTEGER_ARGUMENTS
+                }
+            }
+        }
+        sample = create(cast(IntegerFieldSpec, spec))(SAMPLE_SIZE)
+        assert_nonempty_series(sample)
 
-def test_no_nans():
-    for type_, distributions in MOCK_TYPE_TREE.items():
-        for distr in distributions:
-            sample = create(**{**PROPS, 'distr': distr, 'datatype': type_})(SAMPLE_SIZE)
-            _assert_no_na(sample, type_, distr)
+
+def test_float_distr():
+    for distr in FLOAT_DISTRIBUTIONS:
+        spec = {
+            'type': 'float',
+            'value': {
+                'distr': {
+                    'name': distr,
+                    **FLOAT_ARGUMENTS
+                }
+            }
+        }
+        sample = create(cast(FloatFieldSpec, spec))(SAMPLE_SIZE)
+        assert_nonempty_series(sample)

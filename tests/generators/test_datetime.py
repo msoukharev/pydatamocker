@@ -2,30 +2,30 @@ import pytest
 from pydatamocker.generators.datetime import create
 from ..asserts import assert_equals
 
-PROPS = {
-    'date': {
-        'name': 'test',
-        'start': '2019-02-20',
-        'end': '2019-03-30'
+VALUES = [
+    {
+        'distr': {
+            'name': 'range',
+            'start': '2019-02-20',
+            'end': '2019-03-30',
+        },
+        'format': 'date'
     },
-    'datetime': {
-        'name': 'test',
-        'start': '2019-02-28T11:30:00Z',
-        'end': '2019-03-02T21:30:00Z'
+    {
+        'distr': {
+            'name': 'uniform',
+            'start': '2019-02-28T11:30:00Z',
+            'end': '2019-03-02T21:30:00Z'
+        },
+        'format': 'datetime'
     }
-}
-
-MOCK_TYPE_TREE = {
-    'date': { 'uniform', 'range' },
-    'datetime': { 'uniform', 'range' }
-}
+]
 
 SAMPLE_SIZE = 25723
 
 def test_no_nans():
-    for type_, distributions in MOCK_TYPE_TREE.items():
-        for distr in distributions:
-            sample = create(**{ **PROPS[type_], 'distr': distr, 'datatype': type_ })(SAMPLE_SIZE)
-            assert_equals(0, sample.isna().sum(),
-                f"NaN values are present in the series. Type: {type_}, Distribution: {distr}"
-            )
+    for val in VALUES:
+        sample = create({ 'type': 'datetime', 'value': val })(SAMPLE_SIZE)
+        assert_equals(0, sample.isna().sum(),
+            f"NaN values are present in the series. Distribution: {val['distr']}."
+        )

@@ -4,43 +4,79 @@
     "fields": [
         {
             "name": "FirstName",
-            "dataset": "first_name"
+            "spec": {
+                "type": "dataset",
+                "value": "fist_name"
+            }
         },
         {
             "name": "LastName",
-            "dataset": "last_name"
+            "spec": {
+                "type": "dataset",
+                "value": {
+                    "dataset": "last_name"
+                }
+            }
         },
         {
             "name": "Age",
-            "datatype": "integer",
-            "distr": "normal",
-            "mean": 40,
-            "std": 5
+            "spec": {
+                "type": "integer",
+                "value": {
+                    "distr": {
+                        "type": "normal",
+                        "params": {
+                            "mean": 40,
+                            "std": 5
+                        }
+                    }
+                }
+            }
         },
         {
             "name": "PaymentStatus",
-            "datatype": "enum",
-            "values": ["Overdue", "Pending", "Completed"],
-            "weights": [2, 8, 90]
+            "spec": {
+                "type": "enum",
+                "value": {
+                    "values": ["Overdue", "Pending", "Completed"],
+                    "weights": [2, 8, 90]
+                }
+            }
         },
         {
             "name": "PaymentStatus",
-            "datatype": "enum",
-            "values": ["1", "2", "3"]
+            "spec": {
+                "type": "enum",
+                "value": {
+                    "values": ["1", "2", "3"]
+                }
+            }
         },
         {
             "name": "DateRegistered",
-            "datatype": "date",
-            "distr": "range",
-            "start": "2018-02-13",
-            "end": "2020-10-30"
+            "spec": {
+                "type": "datetime",
+                "value": {
+                    "distr": {
+                        "type": "range",
+                        "params": {
+                            "start": "2018-02-13",
+                            "end": "2020-10-30"
+                        }
+                    }
+                }
+            }
         },
         {
             "name": "LastLogin",
-            "datatype": "datetime",
-            "distr": "range",
-            "start": "2020-09-23T10:10:30",
-            "end": "2022-03-23T20:20:00"
+            "value": {
+                "type": "datetime",
+                "distr": {
+                    "name": "range",
+                    "start": "2020-09-23T10:10:30",
+                    "end": "2022-03-23T20:20:00"
+                }
+            }
         }
     ]
 }
