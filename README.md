@@ -22,17 +22,16 @@ import pydatamocker as pdm
 
 users = pdm.createEmpty('Users')
 
-users.field(name='FirstName', dataset='first_name')
-users.field(name='LastName', dataset='last_name')
-users.field(name='SpouseLastName', dataset='last_name')
-users.field(name='Age', datatype='integer', distr='binomial', n=40, p=0.7)
-users.field(name='SpouseAge', datatype='integer', distr='normal', mean=40, std=10)
-users.field(name='Status', datatype='enum', values=['Active', 'Inactive', 'Pending confirmation'], \
-    weights=[23, 69, 3], distr='shuffled')
-users.field(name='Bucket', datatype='enum', values=['1', '2', '3', '4', '5', '6'], distr='ordered')
-users.field(name='Grade', datatype='enum', values=[1.5, 2.7, 3.3, 4], distr='shuffled')
-users.field(name='DateRegistered', datatype='date', distr='range', start='2010-02-13', end='2021-10-30')
-users.field(name='LastLogin', datatype='datetime', distr='range', start='2015-02-13T8:10:30', end='2021-10-30T19:30:43')
+users.field('FirstName', { 'type': 'dataset', 'dataset': 'first_name' })
+users.field('LastName', { 'type': 'dataset', 'dataset': 'last_name' })
+users.field('Age', { 'type': 'integer', 'distr': { 'name': 'binomial', 'n': 40, 'p': 0.7 } })
+users.field('SpouseAge', { 'type': 'integer', 'distr': { 'name': 'normal', 'mean': 40, 'std': 10 } })
+users.field('Status', { 'type': 'enum', 'distr': { 'values': ['Active', 'Inactive', 'Pending confirmation'],
+    'weights': [23, 69, 3], 'name': 'shuffled' } })
+users.field('Bucket', { 'type': 'enum', 'distr': { 'values': ['1', '2', '3', '4', '5', '6'], 'name': 'ordered' } })
+users.field('Grade', { 'type': 'enum', 'distr': { 'values': [1.5, 2.7, 3.3, 4], 'name': 'shuffled' }})
+users.field('LastLogin', { 'type': 'datetime', 'distr': { 'name': 'range', 'start': '2015-02-13T8:10:30', 'end': '2021-10-30T19:30:43' }})
+users.field('RegisteredDate', { 'type': 'datetime', 'distr': { 'name': 'range', 'start': '2015-02-13', 'end': '2021-10-30' }, 'format': 'date'})
 
 df = users.sample(1_000_000)
 ```
