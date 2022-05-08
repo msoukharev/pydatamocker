@@ -1,7 +1,7 @@
 from typing import Union
 import numpy as np
 from pandas import Series
-from pydatamocker.types import ColumnGenerator, IntegerFieldSpec, NumericFieldSpec
+from pydatamocker.types import ColumnGenerator, FieldParams
 
 
 TYPES = { 'float', 'integer' }
@@ -48,29 +48,32 @@ def from_normal_integer(mean: int, std: float) -> ColumnGenerator:
     return from_binomial_integer(n, p)
 
 
-def create(spec: NumericFieldSpec) -> ColumnGenerator:
-    type_ = spec['type']
-    value = spec['value']['distr']
-    distr_name = value['name']
-    if type_ == 'float':
-        if distr_name == 'normal':
-            return from_normal_float(value['mean'], value['std'])
-        if distr_name == 'uniform':
-            return from_uniform_float(value['min'], value['max'])
-        if distr_name == 'range':
-            return from_range_float(value['start'], value['end'])
+def create(params: FieldParams) -> ColumnGenerator:
+    try:
+        type_ = params['type']
+        distr = params['distr']
+        distr_name = distr['name']
+        if type_ == 'float':
+            if distr_name == 'normal':
+                return from_normal_float(distr['mean'], distr['std'])
+            if distr_name == 'uniform':
+                return from_uniform_float(distr['min'], distr['max'])
+            if distr_name == 'range':
+                return from_range_float(distr['start'], distr['end'])
+            else:
+                raise ValueError(f'Unsupported distribution {distr_name} for type float')
+        elif type_ == 'integer':
+            if distr_name == 'normal':
+                return from_normal_integer(distr['mean'], distr['std'])
+            if distr_name == 'uniform':
+                return from_uniform_integer(distr['min'], distr['max'])
+            if distr_name == 'range':
+                return from_range_integer(distr['start'], distr['end'])
+            if distr_name == 'binomial':
+                return from_binomial_integer(distr['n'], distr['p'])
+            else:
+                raise ValueError(f'Unsupported distribution {distr_name} for type integer')
         else:
-            raise ValueError(f'Unsupported distribution {distr_name} for type float')
-    elif type_ == 'integer':
-        if distr_name == 'normal':
-            return from_normal_integer(value['mean'], value['std'])
-        if distr_name == 'uniform':
-            return from_uniform_integer(value['min'], value['max'])
-        if distr_name == 'range':
-            return from_range_integer(value['start'], value['end'])
-        if distr_name == 'binomial':
-            return from_binomial_integer(value['n'], value['p'])
-        else:
-            raise ValueError(f'Unsupported distribution {distr_name} for type integer')
-    else:
-        raise ValueError(f'Unsupported type ' + type_)
+            raise ValueError(f'Unsupported type ' + type_)
+    except KeyError as kerr:
+        raise kerr

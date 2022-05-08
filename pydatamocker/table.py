@@ -1,8 +1,12 @@
+from dataclasses import Field
 import json
 from typing import Optional
 from pandas import DataFrame
+from pytest import param
+
+from pydatamocker.types import FieldParams, FieldToken, ValueType
 from .builder import build
-from .fieldspec import create
+from .fieldspec import translate
 
 
 def createEmpty(title: str):
@@ -35,15 +39,15 @@ class Table:
                 json.dump(obj, f, indent=(indent if pretty else None))
         write_json(self.config, path, pretty, indent)
 
-    def field(self, **props):
-        self.config['fields'].append(props)
+    def field(self, name: str, params: FieldParams):
+        self.config['fields'].append({ 'name': name, 'params': params})
         return self
 
     def sample(self, size: Optional[int] = None) -> DataFrame:
         if not size and not self.config.get('size'):
             raise ValueError('Missing size')
         size_ = size or self.config['size']
-        build_spec = create(self.config)
+        build_spec = translate(self.config)
         self.dataframe = build(size_, build_spec)
         return self.dataframe
 

@@ -25,7 +25,7 @@ SAMPLE_SIZE = 25723
 
 def test_no_nans():
     for val in VALUES:
-        sample = create({ 'type': 'datetime', 'value': val })(SAMPLE_SIZE)
+        sample = create({ 'type': 'datetime', **val  })(SAMPLE_SIZE)  # type: ignore
         assert_equals(0, sample.isna().sum(),
-            f"NaN values are present in the series. Distribution: {val['distr']}."
+            f"NaN values are present in the series. Distribution: {val['distr']['name']}."
         )

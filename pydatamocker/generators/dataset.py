@@ -1,6 +1,5 @@
-from typing import Iterable, Optional
 from pydatamocker.exceptions.generator import UNSUPPORTED_DATASETS
-from pydatamocker.types import ColumnGenerator, DatasetFieldSpec, FieldSpec
+from pydatamocker.types import ColumnGenerator, FieldParams
 from ..util.data import load_data
 import os.path as osp
 
@@ -17,9 +16,9 @@ def from_dataset(dataset: str) -> ColumnGenerator:
     func = lambda size: data.sample(n=size, replace=True).reset_index(drop=True)
     return func
 
-def create(spec: DatasetFieldSpec) -> ColumnGenerator:
-    dataset: str = spec['value']
-    if dataset:
+def create(spec: FieldParams) -> ColumnGenerator:
+    try:
+        dataset: str = spec['dataset']
         return from_dataset(dataset)
-    else:
-        raise ValueError('Missing size')
+    except KeyError as kerr:
+        raise kerr

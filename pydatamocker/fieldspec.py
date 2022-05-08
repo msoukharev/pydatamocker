@@ -1,10 +1,10 @@
-from typing import Iterable
+from typing import Collection
 from pydatamocker.types import FieldToken
 
 
-def create(table_descriptor: dict) -> Iterable[FieldToken]:
+def translate(table_descriptor: dict) -> Collection[FieldToken]:
     names = set()
-    specs: Iterable[FieldToken] = []
+    specs: Collection[FieldToken] = []
     for fs in table_descriptor['fields']:
         name = fs['name']
         if name in names:

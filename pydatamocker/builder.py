@@ -5,12 +5,13 @@ from psutil import cpu_count
 from pydatamocker.types import FieldToken
 from .generators import create
 
+
 _ParallelBuilderFuncPayload = Tuple[int, FieldToken]
 
 
 def _apply(payload: _ParallelBuilderFuncPayload) -> Series:
     size, token = payload
-    generate = create(token['spec'])
+    generate = create(token['params'])
     series = generate(size)
     series.name = token['name']
     return series

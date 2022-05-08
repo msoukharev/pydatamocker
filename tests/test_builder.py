@@ -10,7 +10,7 @@ def load_spec() -> dict:
 
 FIELDS_SPEC = load_spec()['fields']
 
-SAMPLE_SIZE = 500_000
+SAMPLE_SIZE = 100_000
 
 def test_build():
     res = build(SAMPLE_SIZE, FIELDS_SPEC)
@@ -19,12 +19,3 @@ def test_build():
     for spec in FIELDS_SPEC:
         assert spec['name'] in set(res.columns), "Column missing " + spec['name']
     assert SAMPLE_SIZE == len(res)
-
-def test_raise_dataset_datatype():
-    invalid = list(FIELDS_SPEC)
-    invalid.append({ 'FakeField': 'name', 'dataset': 'a', 'datatype': 'b' })
-    try:
-        build(SAMPLE_SIZE, invalid)
-    except ValueError as _:
-        return
-    assert False, 'No exception raised'

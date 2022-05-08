@@ -3,22 +3,18 @@ import pydatamocker.generators.datetime as datetime
 import pydatamocker.generators.numeric as numeric
 import pydatamocker.generators.dataset as dataset
 import pydatamocker.generators.enum as enum
-from pydatamocker.types import NUMERIC_TYPES, ColumnGenerator, DatasetFieldSpec, DatetimeFieldSpec, EnumFieldSpec, FieldSpec, NumericFieldSpec
+from pydatamocker.types import NUMERIC_TYPES, ColumnGenerator, FieldParams
 
 
-def create(spec: FieldSpec) -> ColumnGenerator:
-    type_ = spec['type']
+def create(params: FieldParams) -> ColumnGenerator:
+    type_ = params['type']
     if type_ == 'dataset':
-        spec = cast(DatasetFieldSpec, spec)
-        return dataset.create(spec)
+        return dataset.create(params)
     elif type_ in NUMERIC_TYPES:
-        spec = cast(NumericFieldSpec, spec)
-        return numeric.create(spec)
+        return numeric.create(params)
     elif type_ == 'datetime':
-        spec = cast(DatetimeFieldSpec, spec)
-        return datetime.create(spec)
+        return datetime.create(params)
     elif type_ == 'enum':
-        spec = cast(EnumFieldSpec, spec)
-        return enum.create(spec)
+        return enum.create(params)
     else:
         raise ValueError('No data typespecifier is provider')
