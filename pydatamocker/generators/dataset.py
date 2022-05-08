@@ -16,9 +16,10 @@ def from_dataset(dataset: str) -> ColumnGenerator:
     func = lambda size: data.sample(n=size, replace=True).reset_index(drop=True)
     return func
 
-def create(spec: FieldParams) -> ColumnGenerator:
+
+def create(params: FieldParams) -> ColumnGenerator:
     try:
-        dataset: str = spec['dataset']
+        dataset: str = params['dataset']
         return from_dataset(dataset)
     except KeyError as kerr:
         raise kerr
