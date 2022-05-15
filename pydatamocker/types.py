@@ -1,5 +1,8 @@
-from typing import Callable, Any, Collection, Iterable, Literal, TypedDict, Union, get_args
+from typing import Callable, Any, Collection, Iterable, Literal, TypeVar, TypedDict, Union, get_args
 from pandas import DataFrame, Series
+
+
+N = TypeVar('N', int, float)
 
 
 # Literals
@@ -20,6 +23,9 @@ IntegerDistribution = Literal['binomial', 'normal', 'range', 'uniform']
 FloatDistribution = Literal['normal', 'range', 'uniform']
 
 
+FilterOperator = Literal['add', 'subtract', 'subtract_from', 'floor', 'ceiling']
+
+
 # Literals args
 
 
@@ -36,6 +42,9 @@ INTEGER_DISTRIBUTIONS = get_args(IntegerDistribution)
 
 
 FLOAT_DISTRIBUTIONS = get_args(FloatDistribution)
+
+
+FILTER_OPERATORS = get_args(FilterOperator)
 
 
 # Classes
@@ -57,14 +66,11 @@ class ValueDistribution(TypedDict, total=False):
 
 class FieldValue(TypedDict, total=False):
     distr: ValueDistribution
-    const: Union[str, int, float]
+    const: Union[int, float]
     dataset: Dataset
     filters: Iterable['UnaryFilter']
     format: str
-
-
-class UnaryFilter(FieldValue, TypedDict):
-    operator: str
+    literal: str
 
 
 class FieldParams(FieldValue, TypedDict):
@@ -76,6 +82,11 @@ class FieldToken(TypedDict):
     params: FieldParams
 
 
+class UnaryFilter(TypedDict):
+    operator: FilterOperator
+    argument: FieldParams
+
+
 # Functions
 
 
@@ -83,6 +94,9 @@ Builder = Callable[[int, Iterable[FieldToken]], DataFrame]
 
 
 ColumnGenerator = Callable[[int], Series]
+
+
+FilteredColumnGenerator = Callable[[UnaryFilter, ColumnGenerator], ColumnGenerator]
 
 
 ColumnGeneratorFactory = Callable[[Any], ColumnGenerator]

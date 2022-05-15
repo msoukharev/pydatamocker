@@ -32,6 +32,34 @@ users.field('Bucket', { 'type': 'enum', 'distr': { 'values': ['1', '2', '3', '4'
 users.field('Grade', { 'type': 'enum', 'distr': { 'values': [1.5, 2.7, 3.3, 4], 'name': 'shuffled' }})
 users.field('LastLogin', { 'type': 'datetime', 'distr': { 'name': 'range', 'start': '2015-02-13T8:10:30', 'end': '2021-10-30T19:30:43' }})
 users.field('RegisteredDate', { 'type': 'datetime', 'distr': { 'name': 'range', 'start': '2015-02-13', 'end': '2021-10-30' }, 'format': 'date'})
+users.field('ConstField', { 'type': 'integer', 'const': 10 , 'filters': [
+    {
+        'operator': 'add',
+        'argument': {
+            'type': 'integer',
+            'const': 20
+        }
+    },
+    {
+        'operator': 'subtract',
+        'argument': {
+            'type': 'integer',
+            'distr': {
+                'name': 'normal',
+                'std': 20,
+                'mean': 30
+            }
+        }
+    },
+    {
+        'operator': 'floor',
+        'argument': {
+            'type': 'integer',
+            'const': 0
+        }
+    }
+]})
 
-df = users.sample(1_000_000)
+df = users.sample(500_000)
+df.head(10)
 ```

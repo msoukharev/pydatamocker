@@ -1,3 +1,4 @@
+from pytest import param
 from pydatamocker.exceptions.generator import UNSUPPORTED_DATASETS
 from pydatamocker.types import ColumnGenerator, FieldParams
 from ..util.data import load_data
@@ -7,6 +8,7 @@ import os.path as osp
 DATASETS = {
     'first_name', 'last_name'
 }
+
 
 def from_dataset(dataset: str) -> ColumnGenerator:
     if dataset not in DATASETS:
@@ -21,5 +23,5 @@ def create(params: FieldParams) -> ColumnGenerator:
     try:
         dataset: str = params['dataset']
         return from_dataset(dataset)
-    except KeyError as kerr:
-        raise kerr
+    except KeyError as _:
+        raise ValueError(f'Unrecognized key: dataset. Provided value: {params} of type {FieldParams}')

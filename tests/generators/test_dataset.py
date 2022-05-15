@@ -1,4 +1,3 @@
-from typing import Literal, get_args
 import pytest
 from pydatamocker.generators.dataset import create
 from pydatamocker.types import DATASETS

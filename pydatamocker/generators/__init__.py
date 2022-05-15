@@ -1,1 +1,1 @@
-from .factory import create
+from .factory import get_generator

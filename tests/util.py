@@ -10,3 +10,8 @@ def assert_nonempty_series(ser: Series):
 def assert_series_superset(ser: Series, super: Iterable):
     unique = set(ser.unique())
     assert unique.issubset(set(super)), f'Series is not a superset. Values outside : {unique.difference(super)}.'
+
+
+def assert_elements_type(ser: Series, t: type):
+    act = ser.dtype
+    assert act == t, f'Expected type {t} but got {ser.dtype}'

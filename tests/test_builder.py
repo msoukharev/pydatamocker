@@ -4,13 +4,17 @@ from pandas import DataFrame
 import json
 import os
 
+
 def load_spec() -> dict:
     with open(os.path.join(os.path.dirname(__file__), 'data', 'testconfig.json'), 'r') as f:
         return json.load(f)
 
+
 FIELDS_SPEC = load_spec()['fields']
 
+
 SAMPLE_SIZE = 100_000
+
 
 def test_build():
     res = build(SAMPLE_SIZE, FIELDS_SPEC)
