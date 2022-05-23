@@ -1,4 +1,5 @@
 from typing import Collection
+import re
 
 
 def assert_nonempty(col: Collection):
@@ -22,3 +23,8 @@ def assert_elements_type(col: Collection, t: type):
     assert len(types) == 1, f'Several types detected: {types}.'
     acttype = types.pop()
     assert acttype == t, f'Expected type {t} but got {acttype}.'
+
+
+def assert_match_regex(col: Collection, patternstr: str):
+    for el in col:
+        assert re.compile(patternstr).match(str(el)), f'Found element not matching the pattern {patternstr}: {el}.'

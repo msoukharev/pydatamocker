@@ -24,7 +24,7 @@
         {
             "name": "Age",
             "params": {
-                "type": "integer",
+                "type": "number",
                 "distr": {
                     "name": "normal",
                     "mean": 40,

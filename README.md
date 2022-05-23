@@ -29,26 +29,26 @@ users.field('LastName', { 'type': 'dataset', 'dataset': {
     'restrict': 3
     }
 })
-users.field('Age', { 'type': 'integer', 'distr': { 'name': 'binomial', 'n': 40, 'p': 0.7 } })
-users.field('SpouseAge', { 'type': 'integer', 'distr': { 'name': 'normal', 'mean': 40, 'std': 10 } })
+users.field('Age', { 'type': 'number', 'distr': { 'name': 'binomial', 'n': 40, 'p': 0.7 } })
+users.field('SpouseAge', { 'type': 'number', 'distr': { 'name': 'normal', 'mean': 40, 'std': 10 } })
 users.field('Status', { 'type': 'enum', 'distr': { 'values': ['Active', 'Inactive', 'Pending confirmation'],
     'weights': [23, 69, 3], 'name': 'shuffled' } })
 users.field('Bucket', { 'type': 'enum', 'distr': { 'values': ['1', '2', '3', '4', '5', '6'], 'name': 'ordered' } })
 users.field('Grade', { 'type': 'enum', 'distr': { 'values': [1.5, 2.7, 3.3, 4], 'name': 'shuffled' }})
 users.field('LastLogin', { 'type': 'datetime', 'distr': { 'name': 'range', 'start': '2015-02-13T8:10:30', 'end': '2021-10-30T19:30:43' }})
 users.field('RegisteredDate', { 'type': 'datetime', 'distr': { 'name': 'range', 'start': '2015-02-13', 'end': '2021-10-30' }, 'format': 'date'})
-users.field('ConstField', { 'type': 'integer', 'const': 10 , 'filters': [
+users.field('ConstField', { 'type': 'number', 'const': 10 , 'filters': [
     {
         'operator': 'add',
         'argument': {
-            'type': 'integer',
+            'type': 'number',
             'const': 20
         }
     },
     {
         'operator': 'subtract',
         'argument': {
-            'type': 'integer',
+            'type': 'number',
             'distr': {
                 'name': 'normal',
                 'std': 20,
@@ -59,12 +59,19 @@ users.field('ConstField', { 'type': 'integer', 'const': 10 , 'filters': [
     {
         'operator': 'floor',
         'argument': {
-            'type': 'integer',
+            'type': 'number',
+            'const': 0
+        }
+    },
+    {
+        'operator': 'round',
+        'argument': {
+            'type': 'number',
             'const': 0
         }
     }
 ]})
 
-df = users.sample(500_000)
+df = users.sample(300_000)
 df.head(10)
 ```

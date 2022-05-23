@@ -1,13 +1,11 @@
 import pytest
 from typing import cast
 from pydatamocker.generators.numeric import from_numeric
-from pydatamocker.types import FILTER_OPERATORS, FLOAT_DISTRIBUTIONS, INTEGER_DISTRIBUTIONS, FieldParams
-from tests.util import assert_elements_type, assert_nonempty
+from pydatamocker.types import FILTER_OPERATORS, NUMERIC_DISTRIBUTIONS, FieldParams
+from tests.util import assert_elements_type, assert_match_regex, assert_nonempty, assert_series_superset
 
 
 INTEGER_ARGUMENTS = {
-    'mean': 10,
-    'std': 3,
     'n': 10,
     'p': 0.3,
     'min': 10,
@@ -33,9 +31,9 @@ SAMPLE_SIZE = 180_000
 
 
 def test_integer_distr():
-    for distr in INTEGER_DISTRIBUTIONS:
+    for distr in [d for d in NUMERIC_DISTRIBUTIONS if d != 'normal']:
         spec = {
-            'type': 'integer',
+            'type': 'number',
             'distr': {
                 'name': distr,
                 **INTEGER_ARGUMENTS
@@ -47,9 +45,9 @@ def test_integer_distr():
 
 
 def test_float_distr():
-    for distr in FLOAT_DISTRIBUTIONS:
+    for distr in [d for d in NUMERIC_DISTRIBUTIONS if d != 'binomial']:
         spec = {
-            'type': 'float',
+            'type': 'number',
             'distr': {
                 'name': distr,
                 **FLOAT_ARGUMENTS
@@ -83,23 +81,62 @@ def test_float_const():
         assert i == 1.10, 'Wrong value instead of constant: {i}'
 
 
-def test_integer_filter():
-    for filter in FILTER_OPERATORS:
+def test_filter_distr():
+    for filter in ['add', 'subtract', 'subtract_from']:
         spec = {
-            'type': 'integer',
+            'type': 'number',
             'distr': {
-                'name': INTEGER_DISTRIBUTIONS[0],
+                'name': 'binomial',
                 **INTEGER_ARGUMENTS
             },
             'filters': [
                 {
                     'operator': filter,
                     'argument': {
-                        'type': 'integer',
+                        'type': 'number',
                         'distr': {
-                            'name': INTEGER_DISTRIBUTIONS[0],
-                            **INTEGER_ARGUMENTS
-                        },
+                            'name': 'range',
+                            **FLOAT_ARGUMENTS
+                        }
+                    }
+                }
+            ]
+        }
+        sample = from_numeric(cast(FieldParams, spec))(SAMPLE_SIZE)
+        assert_nonempty(sample)
+
+
+def test_ceiling():
+    for filter in ['ceiling']:
+        spec = {
+            'type': 'number',
+            'const': 13412341,
+            'filters': [
+                {
+                    'operator': filter,
+                    'argument': {
+                        'type': 'number',
+                        'const': 10.2
+                    }
+                }
+            ]
+        }
+        sample = from_numeric(cast(FieldParams, spec))(SAMPLE_SIZE)
+        assert_nonempty(sample)
+        assert_elements_type(sample, float)
+        assert_series_superset(sample, [10.2])
+
+
+def test_floor():
+    for filter in ['floor']:
+        spec = {
+            'type': 'number',
+            'const': -123.23,
+            'filters': [
+                {
+                    'operator': filter,
+                    'argument': {
+                        'type': 'number',
                         'const': 10
                     }
                 }
@@ -107,29 +144,46 @@ def test_integer_filter():
         }
         sample = from_numeric(cast(FieldParams, spec))(SAMPLE_SIZE)
         assert_nonempty(sample)
+        assert_elements_type(sample, int)
+        assert_series_superset(sample, [10])
 
 
-def test_float_filter():
-    for filter in FILTER_OPERATORS:
-        spec = {
-            'type': 'integer',
-            'distr': {
-                'name': FLOAT_DISTRIBUTIONS[0],
-                **FLOAT_ARGUMENTS
-            },
-            'filters': [
-                {
-                    'operator': filter,
-                    'argument': {
-                        'type': 'integer',
-                        'distr': {
-                            'name': FLOAT_DISTRIBUTIONS[0],
-                            **FLOAT_ARGUMENTS
-                        },
-                        'const': 10.12
-                    }
+def test_round():
+    round = 2
+    spec = {
+        'type': 'number',
+        'const': 103.389080342,
+        'filters': [
+            {
+                'operator': 'round',
+                'argument': {
+                    'type': 'number',
+                    'const': round
                 }
-            ]
-        }
-        sample = from_numeric(cast(FieldParams, spec))(SAMPLE_SIZE)
-        assert_nonempty(sample)
+            }
+        ]
+    }
+    sample = from_numeric(cast(FieldParams, spec))(SAMPLE_SIZE)
+    assert_nonempty(sample)
+    assert_elements_type(sample, float)
+    assert_match_regex(sample, f'^\\d+\\.(\\d){{{round}}}$')
+
+
+def test_round_integer():
+    spec = {
+        'type': 'number',
+        'const': 103.389080342,
+        'filters': [
+            {
+                'operator': 'round',
+                'argument': {
+                    'type': 'number',
+                    'const': 0
+                }
+            }
+        ]
+    }
+    sample = from_numeric(cast(FieldParams, spec))(SAMPLE_SIZE)
+    assert_nonempty(sample)
+    assert_elements_type(sample, int)
+    assert_match_regex(sample, f'^\\d+$')

@@ -8,12 +8,9 @@ from pydatamocker.util.switch import switch
 
 def get_generator(params: FieldParams) -> ColumnGenerator:
     type_ = params['type']
-    return switch(type_,
-        {
-            'dataset': dataset.create,
-            'integer': numeric.from_numeric,
-            'float': numeric.from_numeric,
-            'datetime': datetime.create,
-            'enum': enum.create
-        }
-    )(params)
+    return switch(type_, {
+        'dataset': dataset.create,
+        'number': numeric.from_numeric,
+        'datetime': datetime.create,
+        'enum': enum.create
+    })(params)

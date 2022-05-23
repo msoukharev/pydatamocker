@@ -8,22 +8,16 @@ N = TypeVar('N', int, float)
 # Literals
 
 
-ValueType = Literal['dataset', 'integer', 'float', 'enum', 'datetime']
-
-
-NumericType = Literal['integer', 'float']
+ValueType = Literal['dataset', 'number', 'enum', 'datetime']
 
 
 Dataset = Literal['first_name', 'last_name']
 
 
-IntegerDistribution = Literal['binomial', 'normal', 'range', 'uniform']
+NumericDistribution = Literal['binomial', 'normal', 'range', 'uniform']
 
 
-FloatDistribution = Literal['normal', 'range', 'uniform']
-
-
-FilterOperator = Literal['add', 'subtract', 'subtract_from', 'floor', 'ceiling']
+FilterOperator = Literal['add', 'subtract', 'subtract_from', 'floor', 'ceiling', 'round']
 
 
 # Literals args
@@ -35,13 +29,7 @@ DATASETS = get_args(Dataset)
 TYPES = get_args(ValueType)
 
 
-NUMERIC_TYPES = get_args(NumericType)
-
-
-INTEGER_DISTRIBUTIONS = get_args(IntegerDistribution)
-
-
-FLOAT_DISTRIBUTIONS = get_args(FloatDistribution)
+NUMERIC_DISTRIBUTIONS = get_args(NumericDistribution)
 
 
 FILTER_OPERATORS = get_args(FilterOperator)

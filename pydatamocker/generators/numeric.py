@@ -10,29 +10,33 @@ def _range_step(min: int, max: int, size: int):
     return (max - min) / size
 
 
-def from_normal_float(mean: float, std: float) -> ColumnGenerator:
+def from_normal(mean: float, std: float) -> ColumnGenerator:
     return lambda size: Series(np.random.normal(mean, std, size))
 
 
-def from_uniform_float(min_: float, max_: float) -> ColumnGenerator:
-    return lambda size: Series(np.random.uniform(min_, max_, size))
+def from_uniform(min_: Union[int, float], max_: Union[int, float]) -> ColumnGenerator:
+    if isinstance(min_, (int)) and isinstance(max_, (int)):
+        return lambda size: Series(np.random.randint(min_, max_, size))
+    else:
+        return lambda size: Series(np.random.uniform(min_, max_, size))
 
 
-def from_range_float(start: float, end: float) -> ColumnGenerator:
-    return lambda size: Series(np.arange(start, end,
-        _range_step(round(start), round(end), size)).astype(float)[:size]
-    )
+def from_range(start: Union[int, float], end: Union[int, float]) -> ColumnGenerator:
+    if isinstance(start, (int)) and isinstance(end, (int)):
+        return lambda size: Series(
+            np.arange(start, end, _range_step(start, end, size)).astype(int)[:size]
+        )
+    else:
+        return lambda size: Series(
+            np.arange(start, end, _range_step(round(start), round(end), size)).astype(float)[:size]
+        )
 
 
 def from_const(const: Union[float, int]) -> ColumnGenerator:
     return lambda size: Series(np.repeat(const, size))
 
 
-def from_uniform_integer(min: int, max: int) -> ColumnGenerator:
-    return lambda size: Series(np.random.randint(min, max, size))
-
-
-def from_binomial_integer(n: int, p: float) -> ColumnGenerator:
+def from_binomial(n: int, p: float) -> ColumnGenerator:
     return lambda size: Series(np.random.binomial(n, p, size))
 
 
@@ -42,38 +46,20 @@ def from_range_integer(start: int, end: int) -> ColumnGenerator:
     )
 
 
-def from_normal_integer(mean: int, std: float) -> ColumnGenerator:
-    # binomial approximation to normal
-    # mean = n p
-    # std = n p (1 - p)
-    p = 1 - (std / mean)
-    n = round(mean / p)
-    return from_binomial_integer(n, p)
-
-
 def from_numeric(params: FieldParams) -> ColumnGenerator:
     try:
-        type_ = params['type']
         distr = params.get('distr')
         const = params.get('const')
+        if distr and const:
+            raise ValueError('Both distr and const parameters were supplied. Must contain only one')
         filters = params.get('filters')
         if distr:
-            name = distr['name']
-            if type_ == 'float':
-                gen = switch(name, {
-                    'normal': lambda: from_normal_float(distr['mean'], distr['max']),
-                    'uniform': lambda: from_uniform_float(distr['min'], distr['max']),
-                    'range': lambda: from_range_float(distr['start'], distr['end'])
-                })()
-            elif type_ == 'integer':
-                gen = switch(name, {
-                    'normal': lambda: from_normal_integer(distr['mean'], distr['std']),
-                    'uniform': lambda: from_uniform_integer(distr['min'], distr['max']),
-                    'range': lambda: from_range_integer(distr['start'], distr['end']),
-                    'binomial': lambda: from_binomial_integer(distr['n'], distr['p'])
-                })()
-            else:
-                raise ValueError(f'Unsupported type ' + type_)
+            gen = switch(distr['name'], {
+                'normal': lambda: from_normal(distr['mean'], distr['std']),
+                'uniform': lambda: from_uniform(distr['min'], distr['max']),
+                'range': lambda: from_range(distr['start'], distr['end']),
+                'binomial': lambda: from_binomial(distr['n'], distr['p'])
+            })()
         elif const is not None:
             gen = from_const(params['const'])
         else:
@@ -116,16 +102,30 @@ def apply_ceiling(gen: ColumnGenerator, params: FieldParams) -> ColumnGenerator:
         raise ValueError('Missing value for const')
 
 
+def apply_round(gen: ColumnGenerator, params: FieldParams) -> ColumnGenerator:
+    try:
+        decplaces = params['const']
+        if isinstance(decplaces, (int)):
+            rnd: ColumnGenerator = lambda size: gen(size).round(decplaces)
+            if decplaces == 0:
+                return lambda size: rnd(size).astype(int)
+            else:
+                return rnd
+        else:
+            raise TypeError('const must be an integer')
+    except KeyError as _:
+        raise ValueError('Missing value for const')
+
+
 def apply_filter(generator: ColumnGenerator, filter: UnaryFilter) -> ColumnGenerator:
     op = filter['operator']
     arg = filter['argument']
-    return switch(op,
-        {
-            'add': lambda: apply_add(generator, arg),
-            'subtract': lambda: apply_subtract(generator, arg),
-            'subtract_from': lambda: apply_subtract(generator, arg),
-            'multiply': lambda: apply_multiply(generator, arg),
-            'floor': lambda: apply_floor(generator, arg),
-            'ceiling': lambda: apply_ceiling(generator, arg)
-        }
-    )()
+    return switch(op, {
+        'add': lambda: apply_add(generator, arg),
+        'subtract': lambda: apply_subtract(generator, arg),
+        'subtract_from': lambda: apply_subtract(generator, arg),
+        'multiply': lambda: apply_multiply(generator, arg),
+        'floor': lambda: apply_floor(generator, arg),
+        'ceiling': lambda: apply_ceiling(generator, arg),
+        'round': lambda: apply_round(generator, arg)
+    })()
