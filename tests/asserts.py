@@ -1,3 +1,6 @@
+from typing import Any, Callable, Iterable
+
+
 def _is_blank(str_: str):
     return str_ is None or len(str_) == 0
 

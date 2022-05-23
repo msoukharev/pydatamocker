@@ -2,7 +2,7 @@ import pytest
 from typing import cast
 from pydatamocker.generators.numeric import from_numeric
 from pydatamocker.types import FILTER_OPERATORS, FLOAT_DISTRIBUTIONS, INTEGER_DISTRIBUTIONS, FieldParams
-from tests.util import assert_elements_type, assert_nonempty_series
+from tests.util import assert_elements_type, assert_nonempty
 
 
 INTEGER_ARGUMENTS = {
@@ -42,7 +42,7 @@ def test_integer_distr():
             }
         }
         sample = from_numeric(cast(FieldParams, spec))(SAMPLE_SIZE)
-        assert_nonempty_series(sample)
+        assert_nonempty(sample)
         assert_elements_type(sample, int)
 
 
@@ -56,7 +56,7 @@ def test_float_distr():
             }
         }
         sample = from_numeric(cast(FieldParams, spec))(SAMPLE_SIZE)
-        assert_nonempty_series(sample)
+        assert_nonempty(sample)
         assert_elements_type(sample, float)
 
 
@@ -66,7 +66,7 @@ def test_integer_const():
         'const': 10
     }
     sample = from_numeric(cast(FieldParams, spec))(SAMPLE_SIZE)
-    assert_nonempty_series(sample)
+    assert_nonempty(sample)
     assert_elements_type(sample, int)
     for i in sample:
         assert i == 10, 'Wrong value instead of constant: {i}'
@@ -106,7 +106,7 @@ def test_integer_filter():
             ]
         }
         sample = from_numeric(cast(FieldParams, spec))(SAMPLE_SIZE)
-        assert_nonempty_series(sample)
+        assert_nonempty(sample)
 
 
 def test_float_filter():
@@ -132,4 +132,4 @@ def test_float_filter():
             ]
         }
         sample = from_numeric(cast(FieldParams, spec))(SAMPLE_SIZE)
-        assert_nonempty_series(sample)
+        assert_nonempty(sample)

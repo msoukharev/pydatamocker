@@ -6,14 +6,19 @@
             "name": "FirstName",
             "params": {
                 "type": "dataset",
-                "dataset": "first_name"
+                "dataset": {
+                    "name": "first_name"
+                }
             }
         },
         {
             "name": "LastName",
             "params": {
                 "type": "dataset",
-                "dataset": "last_name"
+                "dataset": {
+                    "name": "last_name",
+                    "restrict": 20
+                }
             }
         },
         {

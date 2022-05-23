@@ -64,10 +64,18 @@ class ValueDistribution(TypedDict, total=False):
     weights: Collection[Any]
 
 
+class DatasetValueParams(TypedDict, total=False):
+    restrict: int
+
+
+class DatasetValue(DatasetValueParams, TypedDict):
+    name: Dataset
+
+
 class FieldValue(TypedDict, total=False):
     distr: ValueDistribution
     const: Union[int, float]
-    dataset: Dataset
+    dataset: DatasetValue
     filters: Iterable['UnaryFilter']
     format: str
     literal: str

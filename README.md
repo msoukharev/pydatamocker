@@ -18,12 +18,17 @@ The package bundles a few datasets in `.pkl` files. They can be sampled by speci
 ### Code example
 
 ```python
-import pydatamocker as pdm
-
 users = pdm.createEmpty('Users')
 
-users.field('FirstName', { 'type': 'dataset', 'dataset': 'first_name' })
-users.field('LastName', { 'type': 'dataset', 'dataset': 'last_name' })
+users.field('FirstName', { 'type': 'dataset', 'dataset': {
+    'name': 'first_name',
+    }
+})
+users.field('LastName', { 'type': 'dataset', 'dataset': {
+    'name': 'last_name',
+    'restrict': 3
+    }
+})
 users.field('Age', { 'type': 'integer', 'distr': { 'name': 'binomial', 'n': 40, 'p': 0.7 } })
 users.field('SpouseAge', { 'type': 'integer', 'distr': { 'name': 'normal', 'mean': 40, 'std': 10 } })
 users.field('Status', { 'type': 'enum', 'distr': { 'values': ['Active', 'Inactive', 'Pending confirmation'],
