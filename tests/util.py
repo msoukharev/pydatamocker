@@ -1,5 +1,42 @@
-from typing import Collection
+from typing import Any, Callable, Collection, Iterable, TypeVar
 import re
+
+
+T= TypeVar('T')
+
+
+def assert_(subj: T, pred: Callable[[T], bool], err_msg: Callable[[T], str]):
+    assert bool(pred(subj)), err_msg(subj)
+
+
+def assert_all(subjs: Collection[T], pred: Callable[[T], bool], err_msg: Callable[[T], str]):
+    for subj in subjs:
+        assert pred(subj), err_msg(subj)
+
+
+def assert_any(subjs: Collection[T], pred: Callable[[T], bool], err_msg: str):
+    for subj in subjs:
+        if pred(subj):
+            return
+    assert False, err_msg
+
+
+def eq(exp: Any):
+    return lambda act: exp == act
+
+
+def order(exp: Collection):
+    def inner(act: Collection):
+        if len(exp) != len(act):
+            return False
+        for a, b in zip(exp, act):
+            if a != b:
+                return False
+        return True
+    return inner
+
+def mismatch(exp: Any):
+    return lambda act: f'Expected {exp} but got {act}'
 
 
 def assert_nonempty(col: Collection):

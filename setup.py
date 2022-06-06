@@ -21,14 +21,11 @@ setuptools.setup(
         "Topic :: Software Development :: Testing",
         "Topic :: Utilities",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10"
     ],
     package_dir={"": "."},
     packages=setuptools.find_packages(where='.'),
-    python_requires=">=3.7",
+    python_requires=">=3.10",
     package_data={
         "": [ "data/*.*" ]
     }

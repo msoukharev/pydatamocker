@@ -1,8 +1,6 @@
-from typing import Callable, Any, Collection, Iterable, Literal, TypeVar, TypedDict, Union, get_args
+from dataclasses import Field
+from typing import Any, Callable, Collection, List, Literal, Tuple, TypedDict, Union, get_args
 from pandas import DataFrame, Series
-
-
-N = TypeVar('N', int, float)
 
 
 # Literals
@@ -37,62 +35,81 @@ FILTER_OPERATORS = get_args(FilterOperator)
 
 # Classes
 
+class Normal(TypedDict):
+    mean: Union[int, float]
+    std: Union[int, float]
 
-class ValueDistribution(TypedDict, total=False):
+
+class Binomial(TypedDict):
+    n: int
+    p: float
+
+
+class Range(TypedDict, total=False):
+    start: Union[int, float, str]
+    end: Union[int, float, str]
+    format: str
+
+
+class Uniform(TypedDict, total=False):
+    min: Union[int, float, str]
+    max: Union[int, float, str]
+    format: str
+
+
+FieldName = Tuple[str, str]
+
+
+class DatasetValue(TypedDict, total=False):
     name: str
-    min: Any
-    max: Any
-    start: Any
-    end: Any
-    mean: Any
-    std: Any
-    n: Any
-    p: Any
-    values: Collection[Any]
-    weights: Collection[Any]
-
-
-class DatasetValueParams(TypedDict, total=False):
     restrict: int
 
 
-class DatasetValue(DatasetValueParams, TypedDict):
-    name: Dataset
+class EnumValue(TypedDict, total=False):
+    values: List[Any]
+    counts: List[Union[int, float]]
+    shuffle: bool
 
-
-class FieldValue(TypedDict, total=False):
-    distr: ValueDistribution
-    const: Union[int, float]
+class Value(TypedDict, total=False):
+    const: Union[int, float, str]
     dataset: DatasetValue
-    filters: Iterable['UnaryFilter']
-    format: str
-    literal: str
+    normal: Normal
+    binomial: Binomial
+    range: Range
+    uniform: Uniform
+    filters: Collection['FieldModificator']
+    enum: EnumValue
+    ref: FieldName
 
 
-class FieldParams(FieldValue, TypedDict):
-    type: ValueType
+class FieldModificator(TypedDict, total=False):
+    add: Union[Value, int, float]
+    subtract: Union[Value, int, float]
+    subtract_from: Union[Value, int, float]
+    multiply: Union[Value, int, float]
+    floor: Union[int, float]
+    ceiling: Union[int, float]
+    round: int
 
 
-class FieldToken(TypedDict):
-    name: str
-    params: FieldParams
+class Field(TypedDict):
+    name: FieldName
+    value: Value
 
 
-class UnaryFilter(TypedDict):
-    operator: FilterOperator
-    argument: FieldParams
+FieldBuildRequest = Tuple[int, Field]
+
+
+FieldBuildResult = Tuple[FieldName, Series]
 
 
 # Functions
 
 
-Builder = Callable[[int, Iterable[FieldToken]], DataFrame]
+Builder = Callable[[Collection[FieldBuildRequest]], Collection[Series]]
 
 
-ColumnGenerator = Callable[[int], Series]
+FieldGenerator = Callable[[int], Series]
 
 
-FilteredColumnGenerator = Callable[[UnaryFilter, ColumnGenerator], ColumnGenerator]
-
-
-ColumnGeneratorFactory = Callable[[Any], ColumnGenerator]
+ModifiedFieldGenerator = Callable[[FieldModificator, FieldGenerator], FieldGenerator]
