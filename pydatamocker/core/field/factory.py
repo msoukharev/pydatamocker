@@ -5,6 +5,7 @@ import pydatamocker.core.field.numeric as numeric
 import pydatamocker.core.field.dataset as dataset
 import pydatamocker.core.field.enum as enum
 import pydatamocker.core.field.datetime as dt
+import pydatamocker.core.field.string as string
 from pydatamocker.types import FieldGenerator, FieldName, Value
 
 
@@ -28,7 +29,7 @@ def get_generator(val: Value, generators: Dict[FieldName, Series] = {}) -> Field
             gen = numeric.from_const(const)
         case {'const': str() as const}:
             gen = enum.from_enum([const])
-        case {'enum': {'values': values}, **rest}:
+        case {'enum': {'values': values, **rest}}:
             gen = enum.from_enum(values, rest.get('counts'), rest.get('shuffle') or False)
         case {'ref': (table, field)}:
             dep = generators[(table, field)]
@@ -68,6 +69,10 @@ def get_generator(val: Value, generators: Dict[FieldName, Series] = {}) -> Field
                 gen = numeric.ceiling(gen, arg)
             case {'round': int() as arg}:
                 gen = numeric.round_(gen, arg)
+            case {'append': arg}:
+                gen = string.append(gen, arg)
+            case {'prepend': arg}:
+                gen = string.prepend(gen, arg)
             case _:
                 raise ValueError(f'Malformed filter {f}')
 
