@@ -83,10 +83,10 @@ class Value(TypedDict, total=False):
 
 
 class FieldModificator(TypedDict, total=False):
-    add: Union[Value, int, float]
-    subtract: Union[Value, int, float]
-    subtract_from: Union[Value, int, float]
-    multiply: Union[Value, int, float]
+    add: Value
+    subtract: Value
+    subtract_from: Value
+    multiply: Value
     floor: Union[int, float]
     ceiling: Union[int, float]
     round: int
