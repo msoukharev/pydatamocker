@@ -16,7 +16,7 @@ default_formatter = {
 
 
 def from_range(start: str, end: str, format: Optional[str]) -> FieldGenerator:
-    return lambda size: pd.date_range(start = start, end = end, periods=size)\
+    return lambda size: pd.date_range(start=start, end=end, periods=size)\
         .to_series(index=arange(size)).dt.strftime(default_formatter[format or 'datetime'])
 
 

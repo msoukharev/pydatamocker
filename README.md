@@ -4,7 +4,7 @@ Create lots of rich mock data.
 
 ## About
 
-Pydatamocker can generate relational data with values of various data types and distributions using random generation and sampling.
+Pydatamocker can generate relational data with values of various data types and distributions using random generation and sampling
 
 ### Datasets
 
@@ -71,4 +71,13 @@ sch.sample()
 df = users.getData()
 df.head(5)
 
+```
+
+### CLI
+
+You can create data through CLI by running the following command. To generate multiple tables, the
+argument to the `--in` command must be a directory containing the build configs.
+
+```text
+python -m pydatamocker --in input-file-or-directory-path --out output-directory-path
 ```

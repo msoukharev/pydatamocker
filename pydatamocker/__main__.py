@@ -42,9 +42,21 @@ def create(insrc: str, outsrc: str):
 
 def main():
     ap = argparse.ArgumentParser(description="Create mock data tables with configuration files")
-    ap.add_argument('--in', help='Table build file or directory containing table build files', dest='insrc', required=True)
-    ap.add_argument('--out', help='Destination directory for the result data', required=False, default=os.pardir, dest='outsrc')
+    ap.add_argument(
+        '--in',
+        help='Table build file or directory containing table build files',
+        dest='insrc',
+        required=True
+    )
+    ap.add_argument(
+        '--out',
+        help='Destination directory for the result data',
+        required=False,
+        default=os.pardir,
+        dest='outsrc'
+    )
     args = ap.parse_args()
     create(args.insrc, args.outsrc)
+
 
 main()

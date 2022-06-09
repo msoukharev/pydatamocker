@@ -36,7 +36,7 @@ class Schema():
                     }
                 ))
         result_map = dict(build(build_requests))
-        table_map = { k: {} for k in self.tables.keys() }
+        table_map = {k: {} for k in self.tables.keys()}
         for table in self.tables.values():
             for field_name in table.fields.keys():
                 table_map[table._name][field_name] = result_map[(table._name), (field_name)]

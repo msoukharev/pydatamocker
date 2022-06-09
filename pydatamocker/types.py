@@ -1,6 +1,5 @@
-from dataclasses import Field
 from typing import Any, Callable, Collection, List, Literal, Tuple, TypedDict, Union, get_args
-from pandas import DataFrame, Series
+from pandas import Series
 
 
 # Literals
@@ -69,6 +68,7 @@ class EnumValue(TypedDict, total=False):
     values: List[Any]
     counts: List[Union[int, float]]
     shuffle: bool
+
 
 class Value(TypedDict, total=False):
     const: Union[int, float, str]

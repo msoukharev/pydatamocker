@@ -5,7 +5,8 @@ from pydatamocker.types import Field, FieldName
 
 # TODO: Cycle detection
 def graph(fields: Collection[Field]) -> Collection[Collection[FieldName]]:
-    adj: Dict[FieldName, Set[FieldName]] = { field['name']: set() for field in fields }
+    adj: Dict[FieldName, Set[FieldName]] = {field['name']: set() for field in fields}
+
     def populate(field: Field):
         baseref = field['value'].get('ref')
         if baseref:

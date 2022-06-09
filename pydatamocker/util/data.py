@@ -10,7 +10,7 @@ class Cache:
         self.data = {}
 
     def insert(self, key: str, data):
-        self.data[key] = { 'data': data }
+        self.data[key] = {'data': data}
 
     def append(self, key, data):
         if self.data.get(key) is None:
@@ -57,7 +57,7 @@ def load_data(path: str):
 
 def write_dataframe(file: str, dataframe: pd.DataFrame):
     file_ext = Path(file).suffix
-    if file_ext == '' or not file_ext in dataframe_writers.keys():
+    if file_ext == '' or file_ext not in dataframe_writers.keys():
         file_ext = '.csv'
     dataframe_writers[file_ext](file, dataframe)
 

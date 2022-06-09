@@ -1,4 +1,4 @@
-from typing import Any, Tuple
+from typing import Any, Tuple, Dict
 from pandas import Series
 from pydatamocker.core.field.factory import get_generator
 from pydatamocker.types import Value
@@ -117,7 +117,7 @@ def test_raise_invalid():
     for val in invalid:
         try:
             _ = get_generator(val)
-        except ValueError as _:
+        except ValueError:
             continue
         assert False, 'ValueError was not raised'
 
@@ -131,7 +131,7 @@ def test_with_filter():
 
 def test_ref():
     val: Value = {
-        'ref': ('A', '1'),
+        'ref': ('A', '1' ),
         'filters':[
             {
                 'add': {

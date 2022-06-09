@@ -46,7 +46,7 @@ def from_range_integer(start: int, end: int) -> FieldGenerator:
 
 def add(gen: FieldGenerator, mod: Union[FieldGenerator, int, float]) -> FieldGenerator:
     if callable(mod):
-        return lambda size: gen(size) + cast( FieldGenerator, mod)(size)
+        return lambda size: gen(size) + cast(FieldGenerator, mod)(size)
     elif isinstance(mod, (int, float)):
         return lambda size: gen(size) + mod
     else:
