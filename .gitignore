@@ -11,5 +11,5 @@
 /.pytest_cache
 # Dist files
 /dist
-
-/actions-runner
+# build files
+/build
