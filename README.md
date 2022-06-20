@@ -2,6 +2,9 @@
 
 Create lots of rich mock data.
 
+![Build](https://github.com/msoukharev/pydatamocker/actions/workflows/python_package.yaml/badge.svg)
+
+
 ## About
 
 Pydatamocker can generate relational data with values of various data types and distributions using random generation and sampling
