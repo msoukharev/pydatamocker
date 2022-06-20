@@ -1,0 +1,31 @@
+{
+    "size": 10000,
+    "fields": [
+        {
+            "name": "UserId",
+            "value": {
+                "ref": ["Users", "Id"]
+            }
+        },
+        {
+            "name": "LastVisit",
+            "value": {
+                "uniform": {
+                    "min": "2019-03-30",
+                    "max": "2022-01-01",
+                    "format": "datetime"
+                }
+            }
+        },
+        {
+            "name": "ActivityProfile",
+            "value": {
+                "enum": {
+                    "values": ["Readonly", "ContentCreation" , "Misc"],
+                    "counts": [1, 0.3, 0.5],
+                    "shuffle": true
+                }
+            }
+        }
+    ]
+}

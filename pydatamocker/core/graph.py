@@ -10,7 +10,7 @@ def graph(fields: Collection[Field]) -> Collection[Collection[FieldName]]:
     def populate(field: Field):
         baseref = field['value'].get('ref')
         if baseref:
-            adj[baseref].add(field['name'])
+            adj[tuple(baseref)].add(field['name'])
         filters = field['value'].get('filters')
         for filter in filters or ():
             filt_field = \

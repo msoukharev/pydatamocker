@@ -1,0 +1,36 @@
+{
+    "size": 1000,
+    "fields": [
+        {
+            "name": "FirstName",
+            "value": {
+                "dataset": {
+                    "name": "first_name",
+                    "restrict": 30000
+                }
+            }
+        },
+        {
+            "name": "LastName",
+            "value": {
+                "dataset": {
+                    "name": "last_name"
+                }
+            }
+        },
+        {
+            "name": "Id",
+            "value": {
+                "range": {
+                    "start": 1000000,
+                    "end": 9000000
+                },
+                "filters": [
+                    {
+                        "prepend": "USR-"
+                    }
+                ]
+            }
+        }
+    ]
+}
